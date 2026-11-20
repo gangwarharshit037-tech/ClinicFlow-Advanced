@@ -192,3 +192,23 @@ reminder previews and optional external service integrations.
 
 Core local demonstration workflows have passed their tested scenarios.
 Live external integrations require additional verification.
+
+## Project Screenshots
+
+### Appointment Booking and AI Receptionist
+
+The homepage provides an appointment booking form and an
+AI receptionist interface for scheduling assistance.
+
+![ClinicFlow homepage](docs/screenshots/clinicflow-homepage.png)
+
+### Admin Dashboard
+
+The administrative dashboard displays appointment statistics,
+booking management tools, and reminder previews.
+
+![ClinicFlow admin overview](docs/screenshots/clinicflow-admin-overview.png)
+
+**Demo safety:** Outbound WhatsApp messaging is disabled,
+and appointment reminders operate in preview-only mode.
+The screenshots are for portfolio demonstration purposes.
