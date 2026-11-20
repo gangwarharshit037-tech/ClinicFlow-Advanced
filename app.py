@@ -607,7 +607,7 @@ def whatsapp_webhook():
     return jsonify(ok=True)
 
 scheduler=BackgroundScheduler(timezone=TZ)
-if os.getenv('ENABLE_SCHEDULER','true').lower()=='true':
+if os.getenv('ENABLE_SCHEDULER','false').lower()=='true':
     scheduler.add_job(run_reminders,'interval',minutes=5,id='reminders',max_instances=1,coalesce=True)
     scheduler.start()
 
