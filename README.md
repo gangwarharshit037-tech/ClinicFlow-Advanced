@@ -162,6 +162,38 @@ The following workflows passed isolated or local tests:
 External calendar and AI service calls were not exercised
 in the isolated functional tests.
 
+### Automated Tests (pytest)
+
+ClinicFlow Advanced includes six automated tests across three Python test files.
+
+Install pytest in your activated virtual environment:
+
+    python -m pip install pytest
+
+Run all automated tests:
+
+    python -m pytest tests/ -v
+
+The automated tests cover:
+
+- Flask homepage rendering.
+- Four invalid appointment request scenarios.
+- Successful appointment creation (HTTP 201).
+- Duplicate appointment rejection (HTTP 409).
+- Verification that duplicate bookings create only one database record.
+
+Tests run in separate Python processes using temporary SQLite databases.
+Live mode, background scheduling, reminder sending, and outbound WhatsApp
+messaging are disabled in the test environment.
+
+Google Calendar synchronization is mocked in the successful booking test.
+Live external integrations are not verified by this test suite.
+
+Latest verified local result: 6 tests passed (November 2026).
+
+Additional workflows listed above were checked separately during earlier
+local development. The automated suite does not yet cover every feature.
+
 ## Known Limitations
 
 - Reminder sending is not implemented for live operation.
