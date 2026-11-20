@@ -1,0 +1,267 @@
+<!doctype html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>ClinicFlow Admin</title>
+    <style>
+      body {
+        font: 15px system-ui;
+        margin: 0;
+        background: #f2f8f9;
+        color: #16313d;
+      }
+      header {
+        background: #0c5b64;
+        color: white;
+        padding: 20px;
+      }
+      main {
+        max-width: 1150px;
+        margin: auto;
+        padding: 18px;
+      }
+      section {
+        background: white;
+        border-radius: 14px;
+        padding: 20px;
+        margin: 16px 0;
+        box-shadow: 0 6px 20px #1231;
+      }
+      button {
+        background: #087f79;
+        border: 0;
+        border-radius: 8px;
+        padding: 9px 14px;
+        color: white;
+        cursor: pointer;
+        margin: 4px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        border-bottom: 1px solid #ddd;
+        padding: 10px;
+        text-align: left;
+      }
+      small {
+        color: #6c7e85;
+      }
+      .scroll {
+        overflow: auto;
+      }
+      .stats {
+        font-size: 20px;
+        font-weight: 700;
+      }
+      a {
+        color: white;
+      }
+
+.dashboard-stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.stat-card {
+    background: #f8fafc;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    text-align: center;
+}
+
+.stat-card h3 {
+    font-size: 14px;
+    color: #64748b;
+    margin-bottom: 12px;
+}
+
+.stat-card .number {
+    font-size: 30px;
+    font-weight: bold;
+    color: #0f766e;
+}
+
+@media (max-width: 900px) {
+    .dashboard-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .dashboard-stats {
+        grid-template-columns: 1fr;
+    }
+}
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>✚ ClinicFlow Admin</h1>
+      <a href="/">Booking site</a> <button onclick="logout()">Logout</button>
+    </header>
+    <main>
+      <section>
+        <h2>Overview</h2>
+        <div id="stats" class="stats">Loading...</div>
+
+<div class="dashboard-stats">
+    <div class="stat-card">
+        <h3>Total Appointments</h3>
+        <div class="number" id="total-count">0</div>
+    </div>
+
+    <div class="stat-card">
+        <h3>Active Appointments</h3>
+        <div class="number" id="active-count">0</div>
+    </div>
+
+    <div class="stat-card">
+        <h3>Cancelled Appointments</h3>
+        <div class="number" id="cancelled-count">0</div>
+    </div>
+
+    <div class="stat-card">
+        <h3>Reminder Records</h3>
+        <div class="number" id="reminder-count">0</div>
+    </div>
+</div>
+
+        <p>
+          <small
+            >{{'WhatsApp outbound: Enabled' if whatsapp_outbound_enabled else 'WhatsApp outbound: Disabled - messages are not sent'}}</small
+          >
+        </p>
+        <button onclick="remind()">Preview due reminders</button>
+        <p><small>Reminder mode: Preview only - no reminders are sent.</small></p>
+        <p id="notice"></p>
+      </section>
+      <section>
+        <h2>Appointments</h2>
+
+<input type="text" id="appointment-search" placeholder="Search patient, phone or doctor..." oninput="searchAppointments()" style="width:100%;padding:12px;margin:10px 0 15px;border:1px solid #ddd;border-radius:8px;">
+<select id="status-filter" onchange="filterAppointments()" style="width:100%; padding:10px; margin:10px 0;">
+    <option value="All">All Appointments</option>
+    <option value="Booked">Booked Appointments</option>
+    <option value="Cancelled">Cancelled Appointments</option>
+</select>
+<button type="button" onclick="resetFilters()" style="margin:10px 0; padding:10px 15px;">
+    Reset Filters
+</button>
+
+<button type="button"
+        onclick="exportAppointmentsCSV()"
+        style="margin:10px 5px; padding:10px 15px;">
+    Export CSV
+</button>
+
+        <div class="scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Patient</th>
+                <th>Phone</th>
+                <th>Doctor</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+      </section>
+      <section>
+        <h2>Recent message delivery log</h2>
+        <div class="scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Appointment</th>
+                <th>Channel</th>
+                <th>Status</th>
+                <th>Detail</th>
+              </tr>
+            </thead>
+            <tbody id="deliveries"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="whatsapp-monitoring">
+        <h2>WhatsApp Monitoring</h2>
+        <p>Delivery event monitoring and manual review overview.</p>
+
+        <div class="dashboard-stats">
+          <div class="stat-card">
+            <h3>Total Events</h3>
+            <div class="number" id="wa-total">--</div>
+          </div>
+
+          <div class="stat-card">
+            <h3>Pending Events</h3>
+            <div class="number" id="wa-pending">--</div>
+          </div>
+
+          <div class="stat-card">
+            <h3>Completed Events</h3>
+            <div class="number" id="wa-completed">--</div>
+          </div>
+
+          <div class="stat-card">
+            <h3>Manual Review</h3>
+            <div class="number" id="wa-review">--</div>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          id="wa-refresh-button"
+          onclick="loadWhatsAppMonitoring()"
+          style="margin-top:15px; padding:10px 16px;">
+          Refresh Monitoring
+        </button>
+
+        <p id="wa-monitoring-status" role="status">
+          Loading WhatsApp monitoring data...
+        </p>
+
+        <div id="wa-review-section" style="margin-top:24px;">
+          <h3>Manual Review Queue</h3>
+          <p>WhatsApp delivery events requiring administrator attention.</p>
+
+          <div class="scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Event ID</th>
+                  <th>WhatsApp Status</th>
+                </tr>
+              </thead>
+              <tbody id="wa-review-queue"></tbody>
+            </table>
+          </div>
+
+          <p id="wa-review-empty" role="status">
+            Waiting for monitoring data...
+          </p>
+        </div>
+
+      </section>
+
+    </main>
+    <script id="csrf-data" type="application/json">
+  {{ csrf | tojson }}
+</script>
+    <script src="{{ url_for('static', filename='admin_backup.js') }}"></script>
+
+    <script src="{{ url_for('static', filename='whatsapp_monitoring.js') }}"></script>
+  </body>
+</html>

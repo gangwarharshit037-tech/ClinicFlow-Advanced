@@ -1,0 +1,81 @@
+.env
+*.db
+*.sqlite*
+__pycache__/
+.venv/
+*.json
+!sample_payload.json
+
+# ==================================================
+# ClinicFlow Advanced - GitHub Security Exclusions
+# ==================================================
+
+# Environment variables and local credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*credentials*.json
+*service-account*.json
+*service_account*.json
+*secret*.json
+
+# SQLite databases and related files
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+*.db-wal
+*.db-shm
+*.sqlite-wal
+*.sqlite-shm
+*.sqlite3-wal
+*.sqlite3-shm
+
+# Python virtual environments
+.venv/
+venv/
+env/
+
+# Python cache and generated files
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Local logs and temporary files
+*.log
+*.tmp
+*.temp
+
+# Backups and development snapshots
+*.bak
+*.backup
+*.old
+*before_step*
+backups/
+backup/
+
+# Editor and operating system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Local test and generated output
+coverage/
+htmlcov/
+.coverage
+dist/
+build/
+
+# Historical development files
+app_backup_*.py
+app_broken_*.py
+backup_before_*/
+static/*_backup.js
