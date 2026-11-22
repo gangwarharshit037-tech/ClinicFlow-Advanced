@@ -26,6 +26,7 @@ app.config.update(
     SESSION_COOKIE_SAMESITE='Lax',
     SESSION_COOKIE_SECURE=(
         os.getenv('PUBLIC_DEMO_MODE', 'false').lower() == 'true'
+        or os.getenv('SESSION_COOKIE_SECURE', 'false').lower() == 'true'
     ),
 )
 TZ=ZoneInfo(os.getenv('CLINIC_TIMEZONE','Asia/Kolkata'))
