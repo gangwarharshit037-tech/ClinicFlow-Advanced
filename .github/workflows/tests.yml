@@ -42,4 +42,4 @@ jobs:
           python -m pip install "pytest>=8,<10"
 
       - name: Run automated tests
-        run: python -m pytest -v
+        run: python -m pytest tests/ -v
