@@ -244,3 +244,47 @@ booking management tools, and reminder previews.
 **Demo safety:** Outbound WhatsApp messaging is disabled,
 and appointment reminders operate in preview-only mode.
 The screenshots are for portfolio demonstration purposes.
+
+## Public Demo Deployment (Render)
+
+ClinicFlow Advanced can be deployed as a public portfolio demonstration
+using Render and Gunicorn.
+
+### Demo Safety
+
+- `PUBLIC_DEMO_MODE=true` enables public-demo restrictions.
+- Only the fictional patient name `Demo Patient` and phone number
+  `+12025550123` are accepted for demo bookings.
+- The public demo allows a maximum of 30 active appointments.
+- Live Google Calendar integration is disabled.
+- WhatsApp webhooks and outbound messaging are disabled.
+- Automated reminder sending and background scheduling are disabled.
+- The public chatbot uses predefined responses instead of external AI.
+- Do not enter real patient details or medical information.
+
+### Temporary Demo Storage
+
+The demo uses a SQLite database stored on Render's ephemeral filesystem.
+
+**Demo appointments are not permanent.** The database may be reset
+when the service restarts, is redeployed, or is replaced.
+
+This deployment is intended for portfolio demonstrations, not
+production clinic operations or real patient records.
+
+### Administrator Configuration
+
+The Render service requires an `ADMIN_PASSWORD` environment variable
+configured privately in the Render dashboard.
+
+The Flask `SECRET_KEY` is generated through the Render configuration.
+
+Never commit passwords, `.env` files, database files, API tokens,
+or other private credentials to GitHub.
+
+### Deployment Configuration
+
+The repository includes `render.yaml` with the Gunicorn startup
+command and public-demo safety settings.
+
+The demo database path is `clinicflow_render_demo.db`.

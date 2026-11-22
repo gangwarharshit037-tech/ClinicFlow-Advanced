@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: clinicflow-advanced-demo
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn --workers 1 --bind 0.0.0.0:$PORT wsgi:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.8
+      - key: PUBLIC_DEMO_MODE
+        value: "true"
+      - key: LIVE_MODE
+        value: "false"
+      - key: ENABLE_SCHEDULER
+        value: "false"
+      - key: REMINDER_SEND_ENABLED
+        value: "false"
+      - key: WHATSAPP_OUTBOUND_ENABLED
+        value: "false"
+      - key: WHATSAPP_STATUS_STORAGE_ENABLED
+        value: "false"
+      - key: DATABASE_PATH
+        value: clinicflow_render_demo.db
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ADMIN_PASSWORD
+        sync: false

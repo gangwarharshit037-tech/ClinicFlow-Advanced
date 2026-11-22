@@ -19,7 +19,13 @@ ROOT=Path(__file__).resolve().parent
 load_dotenv(ROOT/'.env')
 app=Flask(__name__)
 app.secret_key=os.getenv('SECRET_KEY') or secrets.token_hex(32)
-app.config.update(SESSION_COOKIE_HTTPONLY=True, SESSION_COOKIE_SAMESITE='Lax')
+app.config.update(
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SAMESITE='Lax',
+    SESSION_COOKIE_SECURE=(
+        os.getenv('PUBLIC_DEMO_MODE', 'false').lower() == 'true'
+    ),
+)
 TZ=ZoneInfo(os.getenv('CLINIC_TIMEZONE','Asia/Kolkata'))
 DB=Path(os.getenv('DATABASE_PATH','clinicflow.db'))
 if not DB.is_absolute(): DB=ROOT/DB
@@ -69,7 +75,7 @@ from whatsapp_monitoring_api import create_monitoring_blueprint
 
 
 def whatsapp_monitoring_readonly_connection():
-    db_path = Path(__file__).resolve().parent / "clinicflow.db"
+    db_path = DB
 
     return sqlite3.connect(
         db_path.as_uri() + "?mode=ro",
@@ -261,7 +267,28 @@ def chatbot(message):
 @app.get('/')
 def index():return render_template('index.html',doctors=DOCTORS,times=TIMES,live=LIVE,whatsapp_outbound_enabled=(LIVE and os.getenv('WHATSAPP_OUTBOUND_ENABLED','false').strip().lower()=='true'))
 @app.post('/api/chat')
-def chat():return jsonify(reply=chatbot(str((request.get_json(silent=True) or {}).get('message',''))))
+def chat():
+    message = str(
+        (request.get_json(silent=True) or {}).get('message', '')
+    )
+
+    if os.getenv('PUBLIC_DEMO_MODE', 'false').lower() == 'true':
+        allowed = {
+            'clinic hours': 'Demo clinic hours: 9 AM to 6 PM.',
+            'doctors': 'Available doctors: ' + ', '.join(DOCTORS),
+            'booking': 'Use the demo booking form to explore appointments.',
+            'cancellation': 'Contact the demo clinic receptionist for cancellations.',
+        }
+
+        reply = allowed.get(
+            message.strip().lower(),
+            'Public demo: please ask about clinic hours, '
+            'doctors, booking, or cancellation. '
+            'Do not enter personal or medical information.'
+        )
+        return jsonify(reply=reply)
+
+    return jsonify(reply=chatbot(message))
 @app.post('/api/book')
 def book():
     print("DEBUG: BOOKING API CALLED", flush=True)
@@ -269,6 +296,14 @@ def book():
     d=request.get_json(silent=True) or {}
     patient=str(d.get('patient','')).strip(); phone=str(d.get('phone','')).strip()
     doctor=str(d.get('doctor','')); day=str(d.get('date','')); time=str(d.get('time',''))
+
+    # Public portfolio demo: reject non-demo personal details.
+    if os.getenv('PUBLIC_DEMO_MODE', 'false').lower() == 'true':
+        if patient != 'Demo Patient' or phone != '+12025550123':
+            return error(
+                'Public demo: use exactly Demo Patient '
+                'and phone +12025550123.'
+            )
     if not (1<=len(patient)<=100) or not re.fullmatch(r'\+?[1-9]\d{7,14}',phone):return error('Enter a valid name and international phone number (e.g. +919876543210)')
     if doctor not in DOCTORS or time not in TIMES:return error('Invalid doctor or time')
     try:
@@ -281,6 +316,19 @@ def book():
 
     try:
         with conn() as c:
+            if os.getenv('PUBLIC_DEMO_MODE', 'false').lower() == 'true':
+                # Serialize demo booking checks and inserts.
+                c.execute('BEGIN IMMEDIATE')
+                active_count = c.execute(
+                    "SELECT COUNT(*) FROM appointments WHERE status='Booked'"
+                ).fetchone()[0]
+                if active_count >= 30:
+                    return error(
+                        'Public demo appointment limit reached. '
+                        'Please try again after the demo is reset.',
+                        429
+                    )
+
             cur = c.execute(
                 'INSERT INTO appointments(patient,phone,doctor,date,time) VALUES(?,?,?,?,?)',
                 (patient, phone, doctor, day, time)
@@ -302,7 +350,11 @@ def book():
     try:
         print("Starting Google Calendar sync...", flush=True)
 
-        event_id = create_calendar_event(a)
+        # Public portfolio demo must not invoke external Calendar integration.
+        if os.getenv('PUBLIC_DEMO_MODE', 'false').lower() == 'true':
+            event_id = None
+        else:
+            event_id = create_calendar_event(a)
 
         print("Google Calendar Event ID:", event_id, flush=True)
 
@@ -497,11 +549,15 @@ def deliveries():
 
 @app.get('/webhook/whatsapp')
 def verify_webhook():
+    if os.getenv('PUBLIC_DEMO_MODE', 'false').lower() == 'true':
+        return 'Not Found', 404
     if request.args.get('hub.mode')=='subscribe' and os.getenv('WHATSAPP_VERIFY_TOKEN') and hmac.compare_digest(request.args.get('hub.verify_token',''),os.getenv('WHATSAPP_VERIFY_TOKEN')):
         return request.args.get('hub.challenge',''),200
     return 'Forbidden',403
 @app.post('/webhook/whatsapp')
 def whatsapp_webhook():
+    if os.getenv('PUBLIC_DEMO_MODE', 'false').lower() == 'true':
+        return 'Not Found', 404
     secret=os.getenv('META_APP_SECRET','')
     if not secret:return 'Webhook disabled until META_APP_SECRET configured',503
     signature=request.headers.get('X-Hub-Signature-256','')
