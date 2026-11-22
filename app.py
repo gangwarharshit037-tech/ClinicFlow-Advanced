@@ -290,12 +290,35 @@ def chat():
             'cancellation': 'Contact the demo clinic receptionist for cancellations.',
         }
 
-        reply = allowed.get(
-            message.strip().lower(),
-            'Public demo: please ask about clinic hours, '
-            'doctors, booking, or cancellation. '
-            'Do not enter personal or medical information.'
-        )
+        question = message.strip().lower()
+
+        if not question:
+            reply = 'Please type a question.'
+        elif question in allowed:
+            reply = allowed[question]
+        elif any(word in question for word in (
+            'hour', 'open', 'closing', 'timing'
+        )):
+            reply = allowed['clinic hours']
+        elif any(word in question for word in (
+            'doctor', 'physician'
+        )):
+            reply = allowed['doctors']
+        elif any(word in question for word in (
+            'cancel', 'reschedule'
+        )):
+            reply = allowed['cancellation']
+        elif any(word in question for word in (
+            'book', 'appointment', 'schedule'
+        )):
+            reply = allowed['booking']
+        else:
+            reply = (
+                'Public demo: please ask about clinic hours, '
+                'doctors, booking, or cancellation. '
+                'Do not enter personal or medical information.'
+            )
+
         return jsonify(reply=reply)
 
     return jsonify(reply=chatbot(message))
