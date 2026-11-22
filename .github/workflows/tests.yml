@@ -1,0 +1,45 @@
+﻿name: ClinicFlow Automated Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    name: Python 3.12 Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    env:
+      LIVE_MODE: "false"
+      PUBLIC_DEMO_MODE: "false"
+      ENABLE_SCHEDULER: "false"
+      REMINDER_SEND_ENABLED: "false"
+      WHATSAPP_OUTBOUND_ENABLED: "false"
+      WHATSAPP_STATUS_STORAGE_ENABLED: "false"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+          python -m pip install "pytest>=8,<10"
+
+      - name: Run automated tests
+        run: python -m pytest -v
