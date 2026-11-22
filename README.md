@@ -1,5 +1,25 @@
 # ClinicFlow Advanced
 
+## Live Demo
+
+[Open ClinicFlow Advanced](https://clinicflow-advanced-demo.onrender.com)
+
+ClinicFlow Advanced is an educational portfolio demonstration.
+Use fictional patient information only.
+
+Public demo safety settings:
+- WhatsApp outbound messaging is disabled.
+- Reminder sending and scheduling are disabled.
+- External Google Calendar integration is disabled.
+- Real patient information must not be entered.
+
+**Demo credentials for booking:**
+- Patient: `Demo Patient`
+- Phone: `+12025550123`
+
+**Hosting note:** Render Free may take time to start after inactivity.
+SQLite appointment records may reset when the service restarts or redeploys.
+
 A Flask-based clinic appointment management application featuring
 patient booking, an administrative dashboard, an AI receptionist
 interface, appointment reminders, and integration-ready workflows.
