@@ -6,6 +6,7 @@ from reminder_lifecycle import can_transition, update_reminder_status
 from reminder_integration import plan_safe_preview_from_db
 from whatsapp_status_parser import extract_whatsapp_statuses
 from whatsapp_status_storage_wrapper import store_statuses_if_enabled
+from whatsapp_event_migration import migrate_whatsapp_events
 
 from datetime import datetime, timedelta, date
 from functools import wraps
@@ -54,6 +55,11 @@ def init_db():
           detail TEXT, created_at TEXT DEFAULT CURRENT_TIMESTAMP)''')
         c.execute('CREATE TABLE IF NOT EXISTS webhook_messages (message_id TEXT PRIMARY KEY, received_at TEXT DEFAULT CURRENT_TIMESTAMP)')
 init_db()
+
+# Ensure the read-only admin monitoring tables exist.
+# This creates schema only; it does not enable WhatsApp storage.
+with closing(conn()) as monitoring_db:
+    migrate_whatsapp_events(monitoring_db)
 
 def now(): return datetime.now(TZ)
 def error(msg, status=400): return jsonify(error=msg), status
