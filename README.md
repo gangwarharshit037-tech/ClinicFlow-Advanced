@@ -1,5 +1,7 @@
 # ClinicFlow Advanced
 
+[![ClinicFlow Automated Tests](https://github.com/gangwarharshit037-tech/ClinicFlow-Advanced/actions/workflows/tests.yml/badge.svg)](https://github.com/gangwarharshit037-tech/ClinicFlow-Advanced/actions/workflows/tests.yml)
+
 ## Live Demo
 
 [Open ClinicFlow Advanced](https://clinicflow-advanced-demo.onrender.com)
