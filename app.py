@@ -406,6 +406,70 @@ def logout():session.clear();return jsonify(ok=True)
 def list_appointments():
     with conn() as c:rows=c.execute('SELECT * FROM appointments ORDER BY id DESC').fetchall()
     return jsonify([dict(r) for r in rows])
+
+
+@app.get('/api/admin/analytics')
+@admin_required
+def analytics():
+    """Return aggregated appointment analytics without patient details."""
+
+    with conn() as c:
+        summary = dict(c.execute("""
+            SELECT
+                COUNT(*) AS total,
+                COALESCE(SUM(
+                    CASE WHEN status = 'Booked' THEN 1 ELSE 0 END
+                ), 0) AS active,
+                COALESCE(SUM(
+                    CASE WHEN status = 'Cancelled' THEN 1 ELSE 0 END
+                ), 0) AS cancelled
+            FROM appointments
+        """).fetchone())
+
+        doctors = [
+            dict(row) for row in c.execute("""
+                SELECT doctor, COUNT(*) AS total
+                FROM appointments
+                GROUP BY doctor
+                ORDER BY total DESC, doctor ASC
+            """)
+        ]
+
+        daily = [
+            dict(row) for row in c.execute("""
+                SELECT date, COUNT(*) AS total
+                FROM appointments
+                GROUP BY date
+                ORDER BY date ASC
+            """)
+        ]
+
+        times = [
+            dict(row) for row in c.execute("""
+                SELECT time, COUNT(*) AS total
+                FROM appointments
+                GROUP BY time
+                ORDER BY total DESC, time ASC
+            """)
+        ]
+
+    total = summary['total']
+
+    cancellation_rate = (
+        round(summary['cancelled'] / total * 100, 2)
+        if total else 0.0
+    )
+
+    return jsonify({
+        'summary': {
+            **summary,
+            'cancellation_rate': cancellation_rate
+        },
+        'doctors': doctors,
+        'daily': daily,
+        'times': times
+    })
+
 @app.post('/api/admin/appointments/<int:aid>/cancel')
 @admin_required
 @csrf_required

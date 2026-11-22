@@ -98,6 +98,45 @@
         grid-template-columns: 1fr;
     }
 }
+
+      /* ClinicFlow Advanced Analytics Dashboard */
+      .analytics-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+        margin-top: 20px;
+      }
+      .analytics-panel {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 18px;
+        min-width: 0;
+      }
+      .analytics-panel h3 {
+        margin-top: 0;
+        font-size: 16px;
+      }
+      .analytics-chart {
+        min-height: 160px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        justify-content: center;
+      }
+      .analytics-wide {
+        grid-column: 1 / -1;
+      }
+      .analytics-status {
+        color: #64748b;
+        font-size: 14px;
+      }
+      @media (max-width: 700px) {
+        .analytics-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
     </style>
   </head>
   <body>
@@ -140,6 +179,65 @@
         <button onclick="remind()">Preview due reminders</button>
         <p><small>Reminder mode: Preview only - no reminders are sent.</small></p>
         <p id="notice"></p>
+      </section>
+
+      <!-- ClinicFlow Advanced Analytics -->
+      <section id="analytics-dashboard"
+               aria-labelledby="analytics-heading">
+        <h2 id="analytics-heading">Advanced Analytics</h2>
+        <p>
+          Appointment trends, doctor-wise bookings,
+          cancellation statistics and busiest time slots.
+        </p>
+
+        <div class="dashboard-stats">
+          <div class="stat-card">
+            <h3>Cancellation Rate</h3>
+            <div class="number" id="analytics-cancellation-rate">--</div>
+          </div>
+          <div class="stat-card">
+            <h3>Total Doctors</h3>
+            <div class="number" id="analytics-doctor-count">--</div>
+          </div>
+        </div>
+
+        <div class="analytics-grid">
+          <div class="analytics-panel analytics-wide">
+            <h3>Daily Appointment Trends</h3>
+            <div class="analytics-chart"
+                 id="analytics-daily-chart">
+              <p class="analytics-status">
+                Analytics chart not loaded yet.
+              </p>
+            </div>
+          </div>
+
+          <div class="analytics-panel">
+            <h3>Doctor-wise Appointments</h3>
+            <div class="analytics-chart"
+                 id="analytics-doctor-chart">
+              <p class="analytics-status">
+                Analytics chart not loaded yet.
+              </p>
+            </div>
+          </div>
+
+          <div class="analytics-panel">
+            <h3>Busiest Appointment Times</h3>
+            <div class="analytics-chart"
+                 id="analytics-time-chart">
+              <p class="analytics-status">
+                Analytics chart not loaded yet.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <p class="analytics-status"
+           id="analytics-loading-status"
+           role="status">
+          Waiting for analytics integration.
+        </p>
       </section>
       <section>
         <h2>Appointments</h2>
@@ -263,5 +361,6 @@
     <script src="{{ url_for('static', filename='admin.js') }}"></script>
 
     <script src="{{ url_for('static', filename='whatsapp_monitoring.js') }}"></script>
+    <script src="{{ url_for('static', filename='analytics.js') }}"></script>
   </body>
 </html>
