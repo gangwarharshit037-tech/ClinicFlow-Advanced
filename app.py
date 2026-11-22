@@ -19,6 +19,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 ROOT=Path(__file__).resolve().parent
 load_dotenv(ROOT/'.env')
 app=Flask(__name__)
+app.config['MAX_CONTENT_LENGTH'] = 64 * 1024
 app.secret_key=os.getenv('SECRET_KEY') or secrets.token_hex(32)
 app.config.update(
     SESSION_COOKIE_HTTPONLY=True,
@@ -274,9 +275,11 @@ def chatbot(message):
 def index():return render_template('index.html',doctors=DOCTORS,times=TIMES,live=LIVE,whatsapp_outbound_enabled=(LIVE and os.getenv('WHATSAPP_OUTBOUND_ENABLED','false').strip().lower()=='true'))
 @app.post('/api/chat')
 def chat():
-    message = str(
-        (request.get_json(silent=True) or {}).get('message', '')
-    )
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict):
+        return error('Expected a JSON object', 400)
+
+    message = str(data.get('message', ''))
 
     if os.getenv('PUBLIC_DEMO_MODE', 'false').lower() == 'true':
         allowed = {
@@ -299,7 +302,10 @@ def chat():
 def book():
     print("DEBUG: BOOKING API CALLED", flush=True)
 
-    d=request.get_json(silent=True) or {}
+    d = request.get_json(silent=True)
+    if not isinstance(d, dict):
+        return error('Expected a JSON object', 400)
+
     patient=str(d.get('patient','')).strip(); phone=str(d.get('phone','')).strip()
     doctor=str(d.get('doctor','')); day=str(d.get('date','')); time=str(d.get('time',''))
 
