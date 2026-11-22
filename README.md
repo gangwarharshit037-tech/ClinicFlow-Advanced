@@ -42,6 +42,9 @@ admin dashboard.
 - Admin login and protected endpoints
 - Appointment search and filtering
 - Appointment cancellation
+- Secure administrative analytics dashboard
+- Daily appointment trends and doctor-wise booking charts
+- Cancellation rate and busiest appointment time analysis
 - CSV export interface
 - AI receptionist chatbot interface
 - Built-in clinic information responses
@@ -120,9 +123,50 @@ http://127.0.0.1:5000/admin
 
 The included launcher is intended for local use.
 
+## System Architecture
+
+The application uses Flask to connect the patient booking interface,
+protected administrative dashboard, and SQLite appointment storage.
+
+```mermaid
+flowchart TD
+    A[Patient Booking Interface] --> B[Flask Application]
+    C[Admin Dashboard] --> B
+    B --> D[(SQLite Database)]
+    B --> E[Appointment Validation]
+    B --> F[Admin Authentication]
+    C --> G[Analytics JavaScript]
+    G --> H[Protected Analytics API]
+    H --> B
+    B --> I[Optional Integrations]
+```
+
+## Advanced Analytics
+
+ClinicFlow Advanced includes an administrator-only analytics dashboard
+for exploring appointment activity.
+
+The analytics dashboard provides:
+
+- **Cancellation Rate:** Percentage of appointments marked cancelled.
+- **Total Doctors:** Number of doctors represented in the appointment data.
+- **Daily Appointment Trends:** Booking counts grouped by appointment date.
+- **Doctor-wise Appointments:** Appointment counts grouped by doctor.
+- **Busiest Appointment Times:** Appointment counts grouped by time slot.
+
+The frontend uses JavaScript to display responsive horizontal bar charts.
+Analytics data is provided by the protected `/api/admin/analytics` endpoint.
+
+The analytics response contains aggregated statistics rather than
+patient names or phone numbers.
+
+This feature demonstrates backend data aggregation, REST API development,
+administrative access control, and data visualization.
+
 ## Main Application Modules
 
-- `app.py` - Flask routes and application logic
+- `app.py` - Flask routes, application logic and analytics API
+- `static/analytics.js` - Administrative analytics visualization
 - `wsgi.py` - WSGI application entry point
 - `run_local.py` - Local Waitress server launcher
 - `templates/` - Patient and admin interfaces
@@ -238,7 +282,7 @@ local development. The automated suite does not yet cover every feature.
 ClinicFlow Advanced is a Python Flask clinic appointment management
 project featuring SQLite-based booking, a protected administrative
 dashboard, appointment cancellation, an AI receptionist interface,
-reminder previews and optional external service integrations.
+reminder previews, secure appointment analytics, interactive data visualizations and optional external service integrations.
 
 ## Project Status
 
@@ -264,6 +308,13 @@ booking management tools, and reminder previews.
 **Demo safety:** Outbound WhatsApp messaging is disabled,
 and appointment reminders operate in preview-only mode.
 The screenshots are for portfolio demonstration purposes.
+
+### Advanced Analytics Dashboard
+
+The protected analytics dashboard visualizes daily appointment trends,
+doctor-wise booking activity, cancellation statistics and popular time slots.
+
+![ClinicFlow Advanced Analytics Dashboard](docs/screenshots/clinicflow-analytics-dashboard.png)
 
 ## Public Demo Deployment (Render)
 
