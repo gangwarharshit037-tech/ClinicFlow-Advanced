@@ -1,2 +1,26 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ClinicFlow | Smart Appointments</title><link rel="stylesheet" href="{{ url_for('static', filename='booking.css') }}"><link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
-</head><body><header><div class="nav"><h1>✚ ClinicFlow</h1><a href="/admin">Admin dashboard</a></div><p>WhatsApp • AI Receptionist • Calendar • Reminders</p></header><main><p class="notice"><strong>{{'WhatsApp outbound: Enabled' if whatsapp_outbound_enabled else 'WhatsApp outbound: Disabled'}}</strong> — {% if whatsapp_outbound_enabled %}WhatsApp outbound messaging is enabled.{% else %}WhatsApp outbound messages are not sent.{% endif %} Reminder mode: Preview only; no reminders are sent. This demo is not medical advice.</p><div class="grid"><section class="panel"><h2>Book an appointment</h2><form id="booking"><label>Patient name<input name="patient" required maxlength="100" placeholder="Your full name"></label><label>WhatsApp phone (international format)<input name="phone" required placeholder="+919876543210" pattern="\+?[1-9][0-9]{7,14}"></label><label>Doctor<select name="doctor" required><option value="">Choose doctor</option>{% for d in doctors %}<option>{{d}}</option>{% endfor %}</select></label><label>Date<input id="date" name="date" type="date" required></label><label>Time<select name="time" required><option value="">Choose time</option>{% for t in times %}<option>{{t}}</option>{% endfor %}</select></label><p class="small">By submitting, you request a clinic appointment. WhatsApp reminders require separate patient consent.</p><button>Confirm appointment</button></form><p id="status" role="status"></p></section><section class="panel"><h2>AI receptionist</h2><p class="small">Ask about clinic hours, doctors or bookings. Never share sensitive medical information.</p><div class="chat" id="chat"><div class="bubble">Welcome! How can I help with scheduling?</div></div><form id="ask"><label>Message<input id="question" required maxlength="500" placeholder="What are your opening hours?"></label><button>Send message</button></form></section></div></main><div class="foot">ClinicFlow • Educational portfolio application</div><script src="{{ url_for('static', filename='booking.js') }}"></script></body></html>
+</head><body><header><div class="nav"><h1>✚ ClinicFlow</h1><a href="/admin">Admin dashboard</a></div><p>WhatsApp • AI Receptionist • Calendar • Reminders</p></header><main><p class="notice"><strong>{{'WhatsApp outbound: Enabled' if whatsapp_outbound_enabled else 'WhatsApp outbound: Disabled'}}</strong> — {% if whatsapp_outbound_enabled %}WhatsApp outbound messaging is enabled.{% else %}WhatsApp outbound messages are not sent.{% endif %} Reminder mode: Preview only; no reminders are sent. This demo is not medical advice.</p><div class="grid"><section class="panel"><h2>Book an appointment</h2>
+{% if public_demo_mode %}
+<div class="demo-guide" id="demo-guide">
+    <h3>Try the ClinicFlow Demo</h3>
+    <p>Explore this educational portfolio application using the sample details below.</p>
+    <div class="demo-details">
+        <div>
+            <span>Patient name</span>
+            <strong>Demo Patient</strong>
+        </div>
+        <div>
+            <span>WhatsApp phone</span>
+            <strong>+12025550123</strong>
+        </div>
+    </div>
+    <button type="button" id="fill-demo" class="demo-fill">
+        Use Demo Details
+    </button>
+    <p class="demo-safety">
+        Do not enter real personal or medical information.
+        WhatsApp messages and reminders are not sent in this public demo.
+    </p>
+</div>
+{% endif %}
+<form id="booking"><label>Patient name<input name="patient" required maxlength="100" placeholder="{{ 'Demo Patient' if public_demo_mode else 'Your full name' }}"></label><label>WhatsApp phone (international format)<input name="phone" required placeholder="{{ '+12025550123' if public_demo_mode else '+919876543210' }}" pattern="\+?[1-9][0-9]{7,14}"></label><label>Doctor<select name="doctor" required><option value="">Choose doctor</option>{% for d in doctors %}<option>{{d}}</option>{% endfor %}</select></label><label>Date<input id="date" name="date" type="date" required></label><label>Time<select name="time" required><option value="">Choose time</option>{% for t in times %}<option>{{t}}</option>{% endfor %}</select></label><p class="small">By submitting, you request a clinic appointment. WhatsApp reminders require separate patient consent.</p><button>Confirm appointment</button></form><p id="status" role="status"></p></section><section class="panel"><h2>AI receptionist</h2><p class="small">Ask about clinic hours, doctors or bookings. Never share sensitive medical information.</p><div class="chat" id="chat"><div class="bubble">Welcome! How can I help with scheduling?</div></div><form id="ask"><label>Message<input id="question" required maxlength="500" placeholder="What are your opening hours?"></label><button>Send message</button></form></section></div></main><div class="foot">ClinicFlow • Educational portfolio application</div><script src="{{ url_for('static', filename='booking.js') }}"></script></body></html>

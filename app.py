@@ -274,7 +274,23 @@ def chatbot(message):
         return basic
 
 @app.get('/')
-def index():return render_template('index.html',doctors=DOCTORS,times=TIMES,live=LIVE,whatsapp_outbound_enabled=(LIVE and os.getenv('WHATSAPP_OUTBOUND_ENABLED','false').strip().lower()=='true'))
+def index():
+    public_demo_mode = os.getenv(
+        'PUBLIC_DEMO_MODE', 'false'
+    ).lower() == 'true'
+
+    return render_template(
+        'index.html',
+        doctors=DOCTORS,
+        times=TIMES,
+        live=LIVE,
+        public_demo_mode=public_demo_mode,
+        whatsapp_outbound_enabled=(
+            LIVE and os.getenv(
+                'WHATSAPP_OUTBOUND_ENABLED', 'false'
+            ).strip().lower() == 'true'
+        )
+    )
 @app.post('/api/chat')
 def chat():
     data = request.get_json(silent=True)

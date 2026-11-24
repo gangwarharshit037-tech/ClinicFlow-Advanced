@@ -1,1 +1,68 @@
 :root{font-family:system-ui,Segoe UI,sans-serif;color:#16313d;background:#f2f8f9}*{box-sizing:border-box}body{margin:0}header{background:linear-gradient(110deg,#093c52,#0b948c);color:white;padding:34px max(20px,calc((100vw - 1050px)/2))}h1{margin:0;font-size:32px}header p{opacity:.85}main{max-width:1050px;margin:25px auto;padding:0 16px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}.panel{background:white;border:1px solid #e1eded;border-radius:16px;padding:24px;box-shadow:0 10px 24px #103c4310}h2{margin-top:0}label{display:block;font-size:13px;font-weight:650;margin-top:12px}input,select,button{font:inherit;width:100%;padding:12px;border-radius:9px;border:1px solid #cbdcde;margin-top:6px}button{background:#078d85;color:white;font-weight:700;border:0;cursor:pointer;margin-top:18px}button:hover{background:#08756f}.small{font-size:13px;color:#647d86}.notice{padding:10px;background:#eaf7f5;border-radius:8px}.chat{height:290px;overflow:auto;background:#f3f8f9;padding:14px;border-radius:10px}.bubble{background:#dcefeb;border-radius:12px;padding:10px;margin:8px 0;white-space:pre-wrap}.mine{background:#e7e6ff;text-align:right}.nav{display:flex;justify-content:space-between;align-items:center;gap:15px}.nav a{color:white}.foot{text-align:center;color:#66818a;padding:22px}@media(max-width:750px){.grid{grid-template-columns:1fr}header{padding:24px 18px}}
+
+/* Public portfolio demo instructions */
+.demo-guide {
+    background: #eef8f6;
+    border: 1px solid #b9ded8;
+    border-left: 4px solid #078d85;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 20px;
+}
+
+.demo-guide h3 {
+    margin: 0 0 8px;
+    color: #075e59;
+    font-size: 18px;
+}
+
+.demo-guide p {
+    font-size: 13px;
+    line-height: 1.6;
+    margin: 8px 0;
+}
+
+.demo-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 14px 0;
+}
+
+.demo-details div {
+    background: white;
+    border: 1px solid #d4e8e4;
+    border-radius: 8px;
+    padding: 10px;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.demo-details span {
+    display: block;
+    font-size: 12px;
+    color: #647d86;
+    margin-bottom: 5px;
+}
+
+.demo-details strong {
+    font-size: 14px;
+    color: #16313d;
+}
+
+.demo-fill {
+    margin-top: 4px;
+    background: #087f80;
+}
+
+.demo-guide .demo-safety {
+    font-size: 12px;
+    color: #45666d;
+    margin-bottom: 0;
+}
+
+@media (max-width: 420px) {
+    .demo-details {
+        grid-template-columns: 1fr;
+    }
+}
