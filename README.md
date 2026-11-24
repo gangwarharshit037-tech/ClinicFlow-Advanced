@@ -1,103 +1,308 @@
-# ClinicFlow Advanced
+﻿# ClinicFlow Advanced
 
-[![ClinicFlow Automated Tests](https://github.com/gangwarharshit037-tech/ClinicFlow-Advanced/actions/workflows/tests.yml/badge.svg)](https://github.com/gangwarharshit037-tech/ClinicFlow-Advanced/actions/workflows/tests.yml)
+### Smart Appointment Management & Healthcare Data Analytics
+
+[![Automated Tests](https://github.com/gangwarharshit037-tech/ClinicFlow-Advanced/actions/workflows/tests.yml/badge.svg)](https://github.com/gangwarharshit037-tech/ClinicFlow-Advanced/actions/workflows/tests.yml)
+![Python](https://img.shields.io/badge/Python-3.12-blue)
+![Flask](https://img.shields.io/badge/Flask-3.x-black)
+![Database](https://img.shields.io/badge/Database-SQLite-blue)
+![Tests](https://img.shields.io/badge/Local_Tests-46_Passed-brightgreen)
+![Deployment](https://img.shields.io/badge/Deployment-Render-purple)
+![Project](https://img.shields.io/badge/Project-Educational-orange)
 
 ## Live Demo
 
-[Open ClinicFlow Advanced](https://clinicflow-advanced-demo.onrender.com)
+**[Launch ClinicFlow Advanced](https://clinicflow-advanced-demo.onrender.com/)**
 
-ClinicFlow Advanced is an educational portfolio demonstration.
-Use fictional patient information only.
+ClinicFlow Advanced is a full-stack Python web application
+that demonstrates clinic appointment management, administrative
+analytics, secure authentication, interactive data visualization,
+and integration-ready healthcare automation.
 
-Public demo safety settings:
-- WhatsApp outbound messaging is disabled.
-- Reminder sending and scheduling are disabled.
-- External Google Calendar integration is disabled.
-- Real patient information must not be entered.
+The application is designed as an educational portfolio project,
+combining software development, database management, data analytics,
+API development, security engineering, and cloud deployment.
 
-**Demo credentials for booking:**
-- Patient: `Demo Patient`
-- Phone: `+12025550123`
+> This application is an educational demonstration, not a
+> production healthcare system. Never enter real patient information.
 
-**Hosting note:** Render Free may take time to start after inactivity.
-SQLite appointment records may reset when the service restarts or redeploys.
+## Quick Demo Guide
 
-A Flask-based clinic appointment management application featuring
-patient booking, an administrative dashboard, an AI receptionist
-interface, appointment reminders, and integration-ready workflows.
+1. Open the live application.
+2. Click **Use Demo Details**.
+3. Select a doctor, future date, and available time.
+4. Click **Confirm appointment**.
+5. Explore the AI receptionist using clinic-related questions.
 
-## Project Overview
+The public demo accepts only these sample booking details:
 
-ClinicFlow Advanced helps demonstrate how a clinic can organize
-appointments through a web application while maintaining an
-administrative view of booking activity.
+| Field | Demo value |
+|---|---|
+| Patient name | Demo Patient |
+| Phone number | +12025550123 |
 
-The project includes a patient-facing interface and a protected
-admin dashboard.
+No administrator credentials are publicly shared.
 
-## Features
+The Render Free instance may take 50 seconds or more to start
+after inactivity.
 
-- Patient appointment booking
-- Doctor and time-slot selection
-- Appointment validation
-- Duplicate booking prevention
-- Admin login and protected endpoints
-- Appointment search and filtering
-- Appointment cancellation
-- Secure administrative analytics dashboard
-- Daily appointment trends and doctor-wise booking charts
-- Cancellation rate and busiest appointment time analysis
-- CSV export interface
-- AI receptionist chatbot interface
-- Built-in clinic information responses
-- WhatsApp delivery monitoring interface
-- Reminder preview functionality
-- Google Calendar integration code
-- SQLite appointment storage
-- CSRF protection for administrative actions
+## Project Objectives
+
+- Build a functional appointment management application.
+- Transform appointment records into meaningful analytics.
+- Demonstrate database querying and data aggregation.
+- Develop secure administrative REST endpoints.
+- Implement responsive frontend interfaces.
+- Apply automated testing and regression testing.
+- Deploy a working application to a cloud platform.
+
+## Key Features
+
+### Appointment Management
+
+- Patient-facing appointment booking interface.
+- Doctor, date, and time-slot selection.
+- Automatic demo patient details filling.
+- Server-side appointment validation.
+- Duplicate active appointment prevention.
+- Appointment search and filtering.
+- Administrative appointment cancellation.
+- CSV export for further analysis.
+- Responsive desktop and mobile interfaces.
+
+### Advanced Analytics
+
+- Total appointment count.
+- Active and cancelled appointment counts.
+- Appointment cancellation rate.
+- Number of doctors represented in appointment records.
+- Daily appointment trends.
+- Doctor-wise appointment distribution.
+- Busiest appointment time slots.
+- Responsive horizontal bar charts.
+- Automatic analytics refresh after appointment cancellation.
+- Protected analytics API returning aggregated statistics.
+
+### AI Receptionist
+
+- Clinic opening hours.
+- Available doctors.
+- Appointment booking guidance.
+- Appointment cancellation guidance.
+- Restricted public-demo responses.
+- Optional OpenAI integration outside public demo mode.
+
+The public demo uses predefined responses rather than external
+AI service calls.
+
+### Administrative Dashboard
+
+- Password-protected administrator access.
+- Appointment management and filtering.
+- Interactive analytics dashboard.
+- CSV data export.
+- Reminder preview functionality.
+- WhatsApp delivery monitoring interface.
+- Secure logout.
+
+## Project Screenshots
+
+### Appointment Booking and AI Receptionist
+
+![ClinicFlow Homepage](docs/screenshots/clinicflow-homepage.png)
+
+### Administrative Dashboard
+
+![ClinicFlow Admin Dashboard](docs/screenshots/clinicflow-admin-overview.png)
+
+### Advanced Analytics Dashboard
+
+![ClinicFlow Analytics](docs/screenshots/clinicflow-analytics-dashboard.png)
+
+Screenshots demonstrate portfolio functionality and may show
+earlier interface versions.
 
 ## Technology Stack
 
-- Python
-- Flask
-- SQLite
-- HTML
-- CSS
-- JavaScript
-- Waitress
-- APScheduler
+| Category | Technologies |
+|---|---|
+| Programming | Python 3.12 |
+| Backend | Flask |
+| Frontend | HTML, CSS, JavaScript |
+| Database | SQLite |
+| Data Analytics | SQL aggregation, Python, JavaScript |
+| Data Visualization | Responsive JavaScript bar charts |
+| API Architecture | REST-style JSON endpoints |
+| Local Server | Waitress |
+| Cloud Server | Gunicorn |
+| Scheduling | APScheduler |
+| Automated Testing | pytest |
+| Version Control | Git and GitHub |
+| Continuous Integration | GitHub Actions |
+| Cloud Deployment | Render |
+| Optional Integrations | OpenAI, Google Calendar, WhatsApp Cloud API |
 
-Optional integrations include OpenAI, WhatsApp Cloud API,
-and Google Calendar.
+## System Architecture
 
-## Installation
-
-### 1. Clone or download the project
-
-Open a terminal inside the project directory.
-
-### 2. Create a virtual environment
-
-Windows:
-
-```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
+```mermaid
+flowchart TD
+    P[Patient Interface] --> F[Flask Application]
+    A[Admin Dashboard] --> S[Authentication and Security]
+    S --> F
+    F --> V[Appointment Validation]
+    V --> D[(SQLite Database)]
+    F --> D
+    D --> Q[SQL Aggregation]
+    Q --> API[Protected Analytics API]
+    API --> C[JavaScript Charts]
+    C --> A
+    F --> R[Receptionist Responses]
+    F --> M[Reminder Preview]
+    F --> I[Optional External Integrations]
 ```
 
-### 3. Install dependencies
+The application separates patient-facing workflows from
+protected administrative operations.
 
-```powershell
-python -m pip install -r requirements.txt
+Flask handles request processing, validation, authentication,
+database operations, and JSON responses. JavaScript handles
+frontend interactions and analytics visualization.
+
+## Data Analytics Workflow
+
+```mermaid
+flowchart LR
+    A[Appointment Records] --> B[Input Validation]
+    B --> C[SQLite Storage]
+    C --> D[SQL Aggregation]
+    D --> E[Analytics API]
+    E --> F[Dashboard KPIs]
+    E --> G[Interactive Charts]
+    C --> H[CSV Export]
 ```
 
-### 4. Configure environment settings
+The analytics workflow demonstrates how transactional appointment
+records can be converted into operational insights.
 
-Create a local `.env` file with suitable development settings.
+### Key Performance Indicators
 
-Recommended safety defaults:
+| KPI | Description |
+|---|---|
+| Total Appointments | Number of recorded appointments |
+| Active Appointments | Appointments with Booked status |
+| Cancelled Appointments | Appointments with Cancelled status |
+| Cancellation Rate | Cancelled appointments divided by total appointments, multiplied by 100 |
+| Total Doctors | Distinct doctors represented in appointment data |
+| Daily Trends | Appointment counts grouped by appointment date |
+| Doctor Distribution | Appointment counts grouped by doctor |
+| Busiest Time Slots | Appointment counts grouped by scheduled time |
+
+### Analytics Applications
+
+The dashboard demonstrates how appointment data can support:
+
+- Understanding appointment demand.
+- Comparing booking activity across doctors.
+- Identifying frequently selected appointment times.
+- Monitoring cancellation patterns.
+- Exporting records for additional analysis.
+
+These insights are based on demonstration data and should not
+be interpreted as real healthcare operational findings.
+
+The protected analytics API returns aggregated statistics
+rather than patient names or phone numbers.
+
+## Database Overview
+
+SQLite provides lightweight relational database storage.
+
+The appointment records contain information such as:
+
+- Appointment identifier.
+- Patient name.
+- Phone number.
+- Doctor.
+- Appointment date.
+- Appointment time.
+- Appointment status.
+
+The application also includes delivery and webhook-related
+storage structures.
+
+Database-level duplicate active-slot protection helps prevent
+multiple active bookings for the same doctor, date, and time.
+
+The public demo uses fictional booking details only.
+
+## API Endpoints
+
+### Public Endpoints
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| GET | `/` | Public booking interface |
+| POST | `/api/book` | Create an appointment |
+| POST | `/api/chat` | Receptionist response |
+| GET | `/admin/login` | Administrator login page |
+| POST | `/admin/login` | Administrator authentication |
+
+### Protected Administrative Endpoints
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| GET | `/admin` | Administrative dashboard |
+| POST | `/admin/logout` | Secure logout |
+| GET | `/api/admin/appointments` | Retrieve appointment records |
+| GET | `/api/admin/analytics` | Retrieve aggregated analytics |
+| POST | `/api/admin/appointments/<aid>/cancel` | Cancel an appointment |
+| POST | `/api/admin/reminders/run` | Run reminder preview workflow |
+| GET | `/api/admin/deliveries` | Retrieve delivery records |
+
+### Integration Endpoints
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| GET | `/webhook/whatsapp` | Webhook verification |
+| POST | `/webhook/whatsapp` | Webhook event handling |
+
+WhatsApp webhook endpoints are disabled in public demo mode.
+
+Administrative operations require appropriate authentication,
+with CSRF protection applied to relevant state-changing actions.
+
+## Security and Privacy
+
+ClinicFlow Advanced includes multiple application security controls:
+
+| Security control | Implementation |
+|---|---|
+| Authentication | Protected administrator access |
+| Login rate limiting | Failed login attempt restrictions |
+| Rate limiter concurrency | Concurrent request handling |
+| CSRF protection | Protected cancellation and logout actions |
+| Session cookies | HttpOnly, SameSite and configurable Secure settings |
+| Content Security Policy | Restricted script and resource loading |
+| Clickjacking protection | Frame restrictions |
+| MIME protection | X-Content-Type-Options |
+| Permissions Policy | Camera, microphone and geolocation restrictions |
+| Proxy handling | Proxy IP security checks |
+| Input validation | Server-side booking validation |
+| Duplicate prevention | Database-backed active-slot protection |
+| Credential management | Environment-based configuration |
+
+The public deployment uses HTTPS.
+
+These controls demonstrate security-conscious development.
+They do not constitute a professional security audit,
+regulatory compliance certification, or production readiness.
+
+## Public Demo Safety
+
+The deployed application uses:
 
 ```dotenv
+PUBLIC_DEMO_MODE=true
 LIVE_MODE=false
 ENABLE_SCHEDULER=false
 REMINDER_SEND_ENABLED=false
@@ -105,259 +310,327 @@ WHATSAPP_OUTBOUND_ENABLED=false
 WHATSAPP_STATUS_STORAGE_ENABLED=false
 ```
 
-Configure a strong local admin password and Flask secret key.
+Additional public demo restrictions:
 
-Never commit real credentials or patient data to GitHub.
+- Only the designated fictional patient details are accepted.
+- A maximum of 30 active appointments is permitted.
+- Appointment dates must fall within the allowed future booking window.
+- External Google Calendar calls are disabled.
+- WhatsApp webhooks are disabled.
+- Outbound WhatsApp messaging is disabled.
+- Automatic reminder sending is disabled.
+- The receptionist uses predefined responses.
 
-### 5. Start the application
+Never enter real personal information or medical records.
+
+## Project Structure
+
+```text
+ClinicFlow-Advanced/
+|
+|-- app.py
+|-- wsgi.py
+|-- run_local.py
+|-- login_rate_limiter.py
+|-- reminder_integration.py
+|-- reminder_lifecycle.py
+|-- whatsapp_*.py
+|-- requirements.txt
+|-- render.yaml
+|-- .env.example
+|-- .gitignore
+|-- README.md
+|
+|-- templates/
+|   |-- index.html
+|   |-- admin.html
+|   `-- login.html
+|
+|-- static/
+|   |-- booking.css
+|   |-- booking.js
+|   |-- admin.css
+|   |-- admin.js
+|   |-- analytics.js
+|   |-- login.css
+|   |-- login.js
+|   |-- whatsapp_monitoring.js
+|   `-- favicon.svg
+|
+|-- tests/
+|   `-- 20 automated test modules
+|
+|-- docs/
+|   `-- screenshots/
+|
+`-- .github/
+    `-- workflows/
+        `-- tests.yml
+```
+
+## Local Installation
+
+### 1. Prerequisites
+
+- Python 3.12 recommended.
+- Git.
+- Windows PowerShell or an equivalent terminal.
+- A modern web browser.
+
+### 2. Clone the Repository
 
 ```powershell
-python run_local.py
+git clone https://github.com/gangwarharshit037-tech/ClinicFlow-Advanced.git
+cd ClinicFlow-Advanced
 ```
 
-Open:
+### 3. Create a Virtual Environment
 
-http://127.0.0.1:5000
-
-Admin dashboard:
-
-http://127.0.0.1:5000/admin
-
-The included launcher is intended for local use.
-
-## System Architecture
-
-The application uses Flask to connect the patient booking interface,
-protected administrative dashboard, and SQLite appointment storage.
-
-```mermaid
-flowchart TD
-    A[Patient Booking Interface] --> B[Flask Application]
-    C[Admin Dashboard] --> B
-    B --> D[(SQLite Database)]
-    B --> E[Appointment Validation]
-    B --> F[Admin Authentication]
-    C --> G[Analytics JavaScript]
-    G --> H[Protected Analytics API]
-    H --> B
-    B --> I[Optional Integrations]
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
 ```
 
-## Advanced Analytics
+### 4. Install Dependencies
 
-ClinicFlow Advanced includes an administrator-only analytics dashboard
-for exploring appointment activity.
+```powershell
+python -m pip install -r requirements.txt
+python -m pip install pytest
+```
 
-The analytics dashboard provides:
+### 5. Configure the Environment
 
-- **Cancellation Rate:** Percentage of appointments marked cancelled.
-- **Total Doctors:** Number of doctors represented in the appointment data.
-- **Daily Appointment Trends:** Booking counts grouped by appointment date.
-- **Doctor-wise Appointments:** Appointment counts grouped by doctor.
-- **Busiest Appointment Times:** Appointment counts grouped by time slot.
+```powershell
+Copy-Item .env.example .env
+```
 
-The frontend uses JavaScript to display responsive horizontal bar charts.
-Analytics data is provided by the protected `/api/admin/analytics` endpoint.
-
-The analytics response contains aggregated statistics rather than
-patient names or phone numbers.
-
-This feature demonstrates backend data aggregation, REST API development,
-administrative access control, and data visualization.
-
-## Main Application Modules
-
-- `app.py` - Flask routes, application logic and analytics API
-- `static/analytics.js` - Administrative analytics visualization
-- `wsgi.py` - WSGI application entry point
-- `run_local.py` - Local Waitress server launcher
-- `templates/` - Patient and admin interfaces
-- `requirements.txt` - Python dependencies
-
-## Appointment Workflow
-
-1. A patient opens the booking interface.
-2. The patient enters booking information.
-3. The application validates the input.
-4. SQLite stores the appointment.
-5. The admin dashboard displays appointment information.
-6. Authorized administrators can cancel appointments.
-
-## AI Receptionist
-
-The chatbot supports built-in responses about clinic hours,
-available doctors, booking and cancellation guidance.
-
-An optional OpenAI integration is present in the application,
-but live API operation has not been verified by the isolated tests.
-
-## Reminder and Messaging Safety
-
-Reminder functionality currently operates in preview-only mode.
-
-The project includes a separate outbound WhatsApp safety guard.
-
-Recommended local settings:
+Review the local `.env` file and configure the following
+safe development settings:
 
 ```dotenv
+PUBLIC_DEMO_MODE=true
+LIVE_MODE=false
+ENABLE_SCHEDULER=false
 REMINDER_SEND_ENABLED=false
 WHATSAPP_OUTBOUND_ENABLED=false
 WHATSAPP_STATUS_STORAGE_ENABLED=false
+DATABASE_PATH=clinicflow_local_demo.db
 ```
 
-Do not enable live messaging without appropriate configuration,
-consent, authorization and testing.
+Configure a strong private `ADMIN_PASSWORD` and a unique
+`SECRET_KEY`.
 
-## Testing
+A random Flask secret can be generated using:
 
-The following workflows passed isolated or local tests:
+```powershell
+python -c "import secrets; print(secrets.token_hex(32))"
+```
 
-- Homepage rendering
-- Admin dashboard rendering
-- Admin authentication protection
-- CSRF validation for cancellation
-- Appointment creation
-- Duplicate booking rejection
-- Invalid phone number rejection
-- Appointment cancellation
-- Built-in chatbot responses
-- WhatsApp outbound blocking
-- SQLite database integrity
-- Reminder preview safety
+Never commit the resulting credentials to GitHub.
 
-External calendar and AI service calls were not exercised
-in the isolated functional tests.
+### 6. Run the Application
 
-### Automated Tests (pytest)
+```powershell
+python -m flask --app app run --host 127.0.0.1 --port 5000
+```
 
-ClinicFlow Advanced includes six automated tests across three Python test files.
+Open the local application:
 
-Install pytest in your activated virtual environment:
+- Booking interface: http://127.0.0.1:5000/
+- Admin dashboard: http://127.0.0.1:5000/admin
 
-    python -m pip install pytest
+The Flask development server is intended for local testing only.
 
-Run all automated tests:
+The repository also includes `run_local.py` as a local
+Waitress server launcher.
 
-    python -m pytest tests/ -v
+Secure session cookies are enabled in public demo mode.
+For local administrator testing, use HTTPS or an appropriately
+configured non-public development environment.
 
-The automated tests cover:
+## Automated Testing
 
-- Flask homepage rendering.
-- Four invalid appointment request scenarios.
-- Successful appointment creation (HTTP 201).
-- Duplicate appointment rejection (HTTP 409).
-- Verification that duplicate bookings create only one database record.
+ClinicFlow Advanced includes **46 automated tests across
+20 Python test modules**.
 
-Tests run in separate Python processes using temporary SQLite databases.
-Live mode, background scheduling, reminder sending, and outbound WhatsApp
-messaging are disabled in the test environment.
+### Run the Test Suite
 
-Google Calendar synchronization is mocked in the successful booking test.
-Live external integrations are not verified by this test suite.
+```powershell
+python -m pytest -q
+```
 
-Latest verified local result: 6 tests passed (November 2026).
+### Latest Verified Local Result
 
-Additional workflows listed above were checked separately during earlier
-local development. The automated suite does not yet cover every feature.
+```text
+46 passed in 19.30s
+```
+
+Verified on November 24, 2026.
+
+### Test Coverage Areas
+
+| Area | Tested scenarios |
+|---|---|
+| Application | Homepage rendering |
+| Booking | Valid and invalid appointment requests |
+| Database | Duplicate appointment prevention |
+| Administration | Authentication and protected access |
+| Cancellation | Appointment cancellation and CSRF validation |
+| Analytics | Protected appointment statistics |
+| Authentication | Login rate limiting |
+| Concurrency | Concurrent login and rate limiter behavior |
+| Rate Limiter | Capacity, expiration and in-flight requests |
+| Session Security | Cookie configuration |
+| HTTP Security | Security headers and proxy IP handling |
+| Logout | CSRF-protected administrative logout |
+| Chatbot | Restricted public demo responses |
+| Demo Interface | Conditional instructions and sample details |
+
+Tests use isolated processes and temporary databases where
+appropriate.
+
+External messaging and scheduling are disabled in the isolated
+test environment.
+
+Live external integrations are not verified by the automated
+test suite.
+
+### Manual Verification
+
+The following workflows were also manually checked:
+
+- Desktop and mobile interfaces.
+- Automatic demo details filling.
+- Local appointment booking.
+- Live Render appointment booking.
+- Appointment cancellation.
+- Analytics refresh after cancellation.
+- CSV export.
+- Reminder preview.
+- Favicon loading.
+- Administrative login and logout.
+- Live HTTP security headers.
+
+## Continuous Integration
+
+GitHub Actions provides an automated testing workflow through:
+
+```text
+.github/workflows/tests.yml
+```
+
+The workflow badge at the top of this README reflects
+the GitHub Actions workflow status.
+
+## Cloud Deployment
+
+ClinicFlow Advanced is deployed on Render using Gunicorn.
+
+The repository includes a `render.yaml` configuration file.
+
+| Setting | Configuration |
+|---|---|
+| Hosting | Render |
+| Plan | Free |
+| Runtime | Python 3.12.8 |
+| Application Server | Gunicorn |
+| Workers | 1 |
+| Database | SQLite |
+| Public Demo Mode | Enabled |
+| External Messaging | Disabled |
+
+Production hosting command:
+
+```bash
+gunicorn --workers 1 --bind 0.0.0.0:$PORT wsgi:app
+```
+
+The administrator password is configured privately in Render.
+The Flask secret key is generated through the deployment
+configuration.
 
 ## Known Limitations
 
+- Render Free may spin down after inactivity.
+- Initial requests may take 50 seconds or more.
+- SQLite storage on Render is ephemeral.
+- Demo appointment records may reset after restarts or redeployments.
+- The public demo has a limited active appointment capacity.
 - Reminder sending is not implemented for live operation.
-- Google Calendar integration has not been verified end-to-end.
-- OpenAI integration has not been verified end-to-end.
-- WhatsApp outbound messaging is disabled by default.
-- This application is not validated for production clinical use.
-- The demonstration does not provide medical advice.
+- Live OpenAI integration has not been verified end-to-end.
+- Live Google Calendar integration has not been verified end-to-end.
+- WhatsApp outbound messaging is disabled.
+- The application is not validated for production clinical use.
 
-## Security Notes
+## Future Enhancements
 
-- Keep `.env` private.
-- Do not publish real SQLite patient databases.
-- Do not publish credential files or API tokens.
-- Use HTTPS and appropriate deployment security controls
-  before considering any public deployment.
-- Review privacy, authentication, logging and access controls
-  before handling real patient information.
+Potential improvements include:
 
-## Portfolio Description
+- PostgreSQL-based persistent database storage.
+- Advanced date-range analytics filters.
+- Additional operational performance indicators.
+- Excel and Power BI reporting workflows.
+- Role-based administrative access control.
+- Browser-based automated end-to-end tests.
+- Persistent distributed login rate limiting.
+- Additional accessibility testing.
+- Verified external service integrations.
+- Containerized deployment.
 
-ClinicFlow Advanced is a Python Flask clinic appointment management
-project featuring SQLite-based booking, a protected administrative
-dashboard, appointment cancellation, an AI receptionist interface,
-reminder previews, secure appointment analytics, interactive data visualizations and optional external service integrations.
+These are proposed enhancements, not currently implemented
+features.
 
-## Project Status
+## Skills Demonstrated
 
-Core local demonstration workflows have passed their tested scenarios.
-Live external integrations require additional verification.
+- Python application development.
+- Flask backend development.
+- SQL querying and database management.
+- Data aggregation and KPI calculation.
+- Data visualization and dashboard development.
+- REST API development.
+- HTML, CSS and JavaScript.
+- Authentication and application security.
+- Automated testing and debugging.
+- Git and GitHub version control.
+- Continuous integration.
+- Cloud application deployment.
+- Technical documentation.
 
-## Project Screenshots
+## Portfolio Summary
 
-### Appointment Booking and AI Receptionist
+ClinicFlow Advanced is a full-stack Python and Flask project
+that combines appointment management with secure administrative
+analytics.
 
-The homepage provides an appointment booking form and an
-AI receptionist interface for scheduling assistance.
+It demonstrates SQL-based data aggregation, KPI dashboards,
+interactive visualizations, CSV export, REST API development,
+security controls, automated testing, and cloud deployment.
 
-![ClinicFlow homepage](docs/screenshots/clinicflow-homepage.png)
+The project is suitable for demonstrating practical skills
+relevant to data analytics and software development roles.
 
-### Admin Dashboard
+## Author
 
-The administrative dashboard displays appointment statistics,
-booking management tools, and reminder previews.
+**Harshit Gangwar**
 
-![ClinicFlow admin overview](docs/screenshots/clinicflow-admin-overview.png)
+B.Sc. (Hons.) Computer Science
 
-**Demo safety:** Outbound WhatsApp messaging is disabled,
-and appointment reminders operate in preview-only mode.
-The screenshots are for portfolio demonstration purposes.
+Areas of interest: Data Analytics, Python Development,
+SQL, Business Intelligence, and Software Development.
 
-### Advanced Analytics Dashboard
+- GitHub: https://github.com/gangwarharshit037-tech
+- Repository: https://github.com/gangwarharshit037-tech/ClinicFlow-Advanced
+- Live Demo: https://clinicflow-advanced-demo.onrender.com/
 
-The protected analytics dashboard visualizes daily appointment trends,
-doctor-wise booking activity, cancellation statistics and popular time slots.
+## Project Disclaimer
 
-![ClinicFlow Advanced Analytics Dashboard](docs/screenshots/clinicflow-analytics-dashboard.png)
+ClinicFlow Advanced is an educational portfolio application.
+It does not provide medical advice and is not intended for
+real clinical operations or patient record management.
 
-## Public Demo Deployment (Render)
+Never publish real patient data, passwords, API tokens,
+private database files, or other sensitive information.
 
-ClinicFlow Advanced can be deployed as a public portfolio demonstration
-using Render and Gunicorn.
+---
 
-### Demo Safety
-
-- `PUBLIC_DEMO_MODE=true` enables public-demo restrictions.
-- Only the fictional patient name `Demo Patient` and phone number
-  `+12025550123` are accepted for demo bookings.
-- The public demo allows a maximum of 30 active appointments.
-- Live Google Calendar integration is disabled.
-- WhatsApp webhooks and outbound messaging are disabled.
-- Automated reminder sending and background scheduling are disabled.
-- The public chatbot uses predefined responses instead of external AI.
-- Do not enter real patient details or medical information.
-
-### Temporary Demo Storage
-
-The demo uses a SQLite database stored on Render's ephemeral filesystem.
-
-**Demo appointments are not permanent.** The database may be reset
-when the service restarts, is redeployed, or is replaced.
-
-This deployment is intended for portfolio demonstrations, not
-production clinic operations or real patient records.
-
-### Administrator Configuration
-
-The Render service requires an `ADMIN_PASSWORD` environment variable
-configured privately in the Render dashboard.
-
-The Flask `SECRET_KEY` is generated through the Render configuration.
-
-Never commit passwords, `.env` files, database files, API tokens,
-or other private credentials to GitHub.
-
-### Deployment Configuration
-
-The repository includes `render.yaml` with the Gunicorn startup
-command and public-demo safety settings.
-
-The demo database path is `clinicflow_render_demo.db`.
+Built with Python, Flask, SQLite and JavaScript.
