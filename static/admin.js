@@ -88,46 +88,41 @@ async function logout() {
 }
 load();
 
-function searchAppointments() {
+function applyAppointmentFilters() {
     const search = document.getElementById("appointment-search").value.toLowerCase().trim();
+    const status = document.getElementById("status-filter").value;
 
-    const rows = document.querySelectorAll("#rows tr");
-
-    rows.forEach(function(row) {
+    document.querySelectorAll("#rows tr").forEach(function(row) {
         const patient = row.cells[1]?.textContent.toLowerCase() || "";
         const phone = row.cells[2]?.textContent.toLowerCase() || "";
         const doctor = row.cells[3]?.textContent.toLowerCase() || "";
+        const rowStatus = row.cells[6]?.textContent.trim() || "";
 
-        if (patient.includes(search) ||
+        const matchesSearch =
+            patient.includes(search) ||
             phone.includes(search) ||
-            doctor.includes(search)) {
-            row.style.display = "";
-        } else {
-            row.style.display = "none";
-        }
+            doctor.includes(search);
+
+        const matchesStatus =
+            status === "All" || rowStatus === status;
+
+        row.style.display =
+            matchesSearch && matchesStatus ? "" : "none";
     });
 }
+
+function searchAppointments() {
+    applyAppointmentFilters();
+}
+
 function filterAppointments() {
-    const status = document.getElementById("status-filter").value;
-    const rows = document.querySelectorAll("#rows tr");
-
-    rows.forEach(function(row) {
-        const rowStatus = row.cells[6]?.textContent.trim();
-
-        if (status === "All" || rowStatus === status) {
-            row.style.display = "";
-        } else {
-            row.style.display = "none";
-        }
-    });
+    applyAppointmentFilters();
 }
+
 function resetFilters() {
     document.getElementById("appointment-search").value = "";
     document.getElementById("status-filter").value = "All";
-
-    document.querySelectorAll("#rows tr").forEach(function(row) {
-        row.style.display = "";
-    });
+    applyAppointmentFilters();
 }
 
 function exportAppointmentsCSV() {
@@ -175,3 +170,23 @@ function exportAppointmentsCSV() {
 
     URL.revokeObjectURL(url);
 }
+
+
+// CLINICFLOW_ADMIN_EVENT_BINDINGS_V1
+document.getElementById("admin-logout-button")
+    .addEventListener("click", logout);
+
+document.getElementById("admin-remind-button")
+    .addEventListener("click", remind);
+
+document.getElementById("appointment-search")
+    .addEventListener("input", searchAppointments);
+
+document.getElementById("status-filter")
+    .addEventListener("change", filterAppointments);
+
+document.getElementById("admin-reset-filters-button")
+    .addEventListener("click", resetFilters);
+
+document.getElementById("admin-export-csv-button")
+    .addEventListener("click", exportAppointmentsCSV);

@@ -1,0 +1,1 @@
+body{font:16px system-ui;background:#edf7f7;display:grid;place-items:center;min-height:90vh}form{background:white;padding:30px;border-radius:16px;max-width:360px;width:90%;box-shadow:0 10px 30px #1232}input,button{width:100%;box-sizing:border-box;padding:12px;margin:12px 0;border-radius:8px}button{background:#078c85;color:white;border:0}

@@ -13,6 +13,7 @@ from functools import wraps
 from zoneinfo import ZoneInfo
 from pathlib import Path
 from flask import Flask, request, jsonify, render_template, redirect, session, url_for
+from login_rate_limiter import FailedLoginLimiter
 from dotenv import load_dotenv
 from apscheduler.schedulers.background import BackgroundScheduler
 
@@ -410,12 +411,56 @@ def book():
 
 @app.get('/admin/login')
 def login_page():return render_template('login.html')
+login_limiter = FailedLoginLimiter(
+    max_attempts=5,
+    window_seconds=15 * 60,
+)
+
+@app.after_request
+def add_security_headers(response):
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
+    response.headers["Content-Security-Policy"] = (
+        "default-src 'self'; "
+        "script-src 'self'; "
+        "style-src 'self'; "
+        "object-src 'none'; "
+        "base-uri 'self'; "
+        "frame-ancestors 'none'"
+    )
+    return response
+
+
 @app.post('/admin/login')
 def login():
     configured=os.getenv('ADMIN_PASSWORD','')
-    if len(configured)<12:return error('Set ADMIN_PASSWORD to at least 12 characters in .env',503)
-    if not hmac.compare_digest(str((request.get_json(silent=True) or {}).get('password','')),configured):return error('Invalid password',401)
-    session.clear();session['admin']=True;session['csrf']=secrets.token_urlsafe(24)
+    if len(configured)<12:
+        return error('Set ADMIN_PASSWORD to at least 12 characters in .env',503)
+
+    client_ip = request.remote_addr or 'unknown'
+
+    token = login_limiter.reserve_attempt(client_ip)
+    if token is None:
+        return error('Too many login attempts. Try again later.',429)
+
+    try:
+        password = str((request.get_json(silent=True) or {}).get('password',''))
+        succeeded = hmac.compare_digest(password,configured)
+    except BaseException:
+        login_limiter.finish_attempt(client_ip, token, succeeded=False)
+        raise
+
+    if not login_limiter.finish_attempt(client_ip, token, succeeded):
+        return error('Login attempt expired. Please try again.',429)
+
+    if not succeeded:
+        return error('Invalid password',401)
+
+    session.clear()
+    session['admin']=True
+    session['csrf']=secrets.token_urlsafe(24)
     return jsonify(ok=True)
 @app.get('/admin')
 def admin():

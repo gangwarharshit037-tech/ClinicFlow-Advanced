@@ -130,3 +130,8 @@ async function loadWhatsAppMonitoring() {
 }
 
 document.addEventListener("DOMContentLoaded", loadWhatsAppMonitoring);
+
+
+// CLINICFLOW_WA_REFRESH_BINDING_V1
+document.getElementById("wa-refresh-button")
+    .addEventListener("click", loadWhatsAppMonitoring);

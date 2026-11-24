@@ -1,0 +1,1 @@
+document.getElementById('f').onsubmit=async e=>{e.preventDefault();let r=await fetch('/admin/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:document.getElementById('password').value})});let j=await r.json();if(r.ok)location.href='/admin';else document.getElementById('msg').textContent=j.error}

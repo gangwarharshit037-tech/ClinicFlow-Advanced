@@ -1,0 +1,142 @@
+
+      body {
+        font: 15px system-ui;
+        margin: 0;
+        background: #f2f8f9;
+        color: #16313d;
+      }
+      header {
+        background: #0c5b64;
+        color: white;
+        padding: 20px;
+      }
+      main {
+        max-width: 1150px;
+        margin: auto;
+        padding: 18px;
+      }
+      section {
+        background: white;
+        border-radius: 14px;
+        padding: 20px;
+        margin: 16px 0;
+        box-shadow: 0 6px 20px #1231;
+      }
+      button {
+        background: #087f79;
+        border: 0;
+        border-radius: 8px;
+        padding: 9px 14px;
+        color: white;
+        cursor: pointer;
+        margin: 4px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        border-bottom: 1px solid #ddd;
+        padding: 10px;
+        text-align: left;
+      }
+      small {
+        color: #6c7e85;
+      }
+      .scroll {
+        overflow: auto;
+      }
+      .stats {
+        font-size: 20px;
+        font-weight: 700;
+      }
+      a {
+        color: white;
+      }
+
+.dashboard-stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.stat-card {
+    background: #f8fafc;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    text-align: center;
+}
+
+.stat-card h3 {
+    font-size: 14px;
+    color: #64748b;
+    margin-bottom: 12px;
+}
+
+.stat-card .number {
+    font-size: 30px;
+    font-weight: bold;
+    color: #0f766e;
+}
+
+@media (max-width: 900px) {
+    .dashboard-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .dashboard-stats {
+        grid-template-columns: 1fr;
+    }
+}
+
+      /* ClinicFlow Advanced Analytics Dashboard */
+      .analytics-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+        margin-top: 20px;
+      }
+      .analytics-panel {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 18px;
+        min-width: 0;
+      }
+      .analytics-panel h3 {
+        margin-top: 0;
+        font-size: 16px;
+      }
+      .analytics-chart {
+        min-height: 160px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        justify-content: center;
+      }
+      .analytics-wide {
+        grid-column: 1 / -1;
+      }
+      .analytics-status {
+        color: #64748b;
+        font-size: 14px;
+      }
+      @media (max-width: 700px) {
+        .analytics-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+
+/* CSP-safe admin dashboard control styles */
+.admin-search-field { width:100%;padding:12px;margin:10px 0 15px;border:1px solid #ddd;border-radius:8px; }
+.admin-status-filter { width:100%; padding:10px; margin:10px 0; }
+.admin-reset-button { margin:10px 0; padding:10px 15px; }
+.admin-export-button { margin:10px 5px; padding:10px 15px; }
+.admin-wa-refresh-button { margin-top:15px; padding:10px 16px; }
+.admin-wa-review-section { margin-top:24px; }
