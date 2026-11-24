@@ -66,7 +66,12 @@ async function cancel(id) {
   $("notice").textContent = r.ok
     ? "Appointment cancelled"
     : (await r.json()).error;
-  load();
+
+  await load();
+
+  if (r.ok && typeof window.loadAnalytics === "function") {
+    await window.loadAnalytics();
+  }
 }
 async function remind() {
   let r = await fetch("/api/admin/reminders/run", {
