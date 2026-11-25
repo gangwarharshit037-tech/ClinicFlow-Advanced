@@ -9,64 +9,401 @@
     if (element) element.textContent = message;
   }
 
-  function renderChart(elementId, items, labelKey, limit = 12) {
-    const container = byId(elementId);
-    if (!container) return;
 
+  // V2 Interactive Chart Management
+  const chartInstances = new Map();
+
+  function destroyChart(elementId) {
+    const chart = chartInstances.get(elementId);
+
+    if (chart) {
+      chart.destroy();
+      chartInstances.delete(elementId);
+    }
+  }
+
+  function showEmptyChart(elementId) {
+    destroyChart(elementId);
+
+    const container = byId(elementId);
     container.replaceChildren();
 
-    if (!Array.isArray(items) || items.length === 0) {
-      const empty = document.createElement("p");
-      empty.className = "analytics-status";
-      empty.textContent = "No appointment data available.";
-      container.appendChild(empty);
+    const message = document.createElement("p");
+    message.className = "analytics-status";
+    message.textContent = "No appointment data available.";
+
+    container.appendChild(message);
+  }
+
+  function createInteractiveChart(elementId, config, description) {
+    destroyChart(elementId);
+
+    const container = byId(elementId);
+    container.replaceChildren();
+
+    const wrapper = document.createElement("div");
+    wrapper.className = "analytics-canvas-wrapper";
+
+    const canvas = document.createElement("canvas");
+    canvas.setAttribute("role", "img");
+    canvas.setAttribute("aria-label", description);
+    canvas.textContent = description;
+
+    wrapper.appendChild(canvas);
+    container.appendChild(wrapper);
+
+    const chart = new window.Chart(canvas, config);
+    chartInstances.set(elementId, chart);
+  }
+
+  function renderDailyLineChart(items, kpis) {
+    const elementId = "analytics-daily-chart";
+
+    if (!items.length) {
+      showEmptyChart(elementId);
       return;
     }
 
-    const visible = items.slice(0, limit);
-
-    const maximum = Math.max(
-      1,
-      ...visible.map((item) => Number(item.total) || 0)
+    // Display up to the last 30 calendar days.
+    const end = new Date(
+      `${kpis.period_end || items[items.length - 1].date}T00:00:00Z`
     );
 
-    visible.forEach((item) => {
-      const count = Math.max(0, Number(item.total) || 0);
-      const label = String(item[labelKey] ?? "Unknown");
+    const start = new Date(
+      `${kpis.period_start || items[0].date}T00:00:00Z`
+    );
 
-      const row = document.createElement("div");
-      row.style.display = "grid";
-      row.style.gridTemplateColumns = "minmax(75px, 130px) 1fr 42px";
-      row.style.alignItems = "center";
-      row.style.gap = "10px";
+    const dayMs = 86400000;
 
-      const name = document.createElement("span");
-      name.textContent = label;
-      name.style.fontSize = "13px";
-      name.style.overflowWrap = "anywhere";
+    const first = Math.max(
+      start.getTime(),
+      end.getTime() - 29 * dayMs
+    );
 
-      const track = document.createElement("div");
-      track.style.background = "#e2e8f0";
-      track.style.height = "18px";
-      track.style.borderRadius = "5px";
-      track.style.overflow = "hidden";
+    const counts = new Map(
+      items.map((item) => [
+        item.date,
+        Number(item.total) || 0
+      ])
+    );
 
-      const bar = document.createElement("div");
-      bar.style.height = "100%";
-      bar.style.width = `${(count / maximum) * 100}%`;
-      bar.style.background = "#0f766e";
-      bar.style.borderRadius = "5px";
+    const labels = [];
+    const values = [];
 
-      track.appendChild(bar);
+    for (
+      let day = first;
+      day <= end.getTime();
+      day += dayMs
+    ) {
+      const label = new Date(day).toISOString().slice(0, 10);
 
-      const value = document.createElement("strong");
-      value.textContent = String(count);
-      value.style.fontSize = "13px";
-      value.style.textAlign = "right";
+      labels.push(label);
+      values.push(counts.get(label) || 0);
+    }
 
-      row.append(name, track, value);
-      container.appendChild(row);
-    });
+    const description = labels.map(
+      (label, index) => `${label}: ${values[index]} appointments`
+    ).join("; ");
+
+    createInteractiveChart(elementId, {
+      type: "line",
+      data: {
+        labels: labels,
+        datasets: [{
+          label: "Appointments",
+          data: values,
+          borderColor: "#0f766e",
+          backgroundColor: "rgba(15, 118, 110, 0.12)",
+          borderWidth: 2,
+          pointRadius: 4,
+          pointHoverRadius: 7,
+          tension: 0,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: false,
+        interaction: {
+          mode: "index",
+          intersect: false
+        },
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            enabled: true
+          }
+        },
+        scales: {
+          x: {
+            ticks: {
+              maxTicksLimit: 7
+            }
+          },
+          y: {
+            beginAtZero: true,
+            ticks: {
+              precision: 0
+            }
+          }
+        }
+      }
+    }, description);
+
+    const note = document.createElement("p");
+    note.className = "analytics-status";
+    note.textContent =
+      `Showing ${labels[0]} to ${labels[labels.length - 1]} (maximum 30 calendar days).`;
+
+    byId(elementId).appendChild(note);
+  }
+
+
+  function renderDoctorBarChart(items) {
+    const elementId = "analytics-doctor-chart";
+
+    if (!items.length) {
+      showEmptyChart(elementId);
+      return;
+    }
+
+    const visible = items.slice(0, 10);
+
+    const labels = visible.map(
+      (item) => String(item.doctor)
+    );
+
+    const values = visible.map(
+      (item) => Number(item.total) || 0
+    );
+
+    const description = labels.map(
+      (label, index) => `${label}: ${values[index]} appointments`
+    ).join("; ");
+
+    createInteractiveChart(elementId, {
+      type: "bar",
+      data: {
+        labels: labels,
+        datasets: [{
+          label: "Appointments",
+          data: values,
+          backgroundColor: "#0f766e",
+          hoverBackgroundColor: "#115e59",
+          borderRadius: 5,
+          maxBarThickness: 32
+        }]
+      },
+      options: {
+        indexAxis: "y",
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: false,
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            enabled: true
+          }
+        },
+        scales: {
+          x: {
+            beginAtZero: true,
+            ticks: {
+              precision: 0
+            }
+          },
+          y: {
+            ticks: {
+              autoSkip: false,
+              callback: function(value) {
+                const label = this.getLabelForValue(value);
+                return label.split(" - ");
+              }
+            }
+          }
+        }
+      }
+    }, description);
+
+    const note = document.createElement("p");
+    note.className = "analytics-status";
+    note.textContent =
+      `Showing ${visible.length} of ${items.length} doctors, ranked by appointment volume.`;
+
+    byId(elementId).appendChild(note);
+  }
+
+  function renderTimeBarChart(items) {
+    const elementId = "analytics-time-chart";
+
+    if (!items.length) {
+      showEmptyChart(elementId);
+      return;
+    }
+
+    const visible = items.slice(0, 10);
+
+    const labels = visible.map(
+      (item) => String(item.time)
+    );
+
+    const values = visible.map(
+      (item) => Number(item.total) || 0
+    );
+
+    const description = labels.map(
+      (label, index) => `${label}: ${values[index]} appointments`
+    ).join("; ");
+
+    createInteractiveChart(elementId, {
+      type: "bar",
+      data: {
+        labels: labels,
+        datasets: [{
+          label: "Appointments",
+          data: values,
+          backgroundColor: "#2563eb",
+          hoverBackgroundColor: "#1d4ed8",
+          borderRadius: 5,
+          maxBarThickness: 40
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: false,
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            enabled: true
+          }
+        },
+        scales: {
+          x: {
+            ticks: {
+              maxRotation: 45,
+              minRotation: 0
+            }
+          },
+          y: {
+            beginAtZero: true,
+            ticks: {
+              precision: 0
+            }
+          }
+        }
+      }
+    }, description);
+
+    const note = document.createElement("p");
+    note.className = "analytics-status";
+    note.textContent =
+      `Showing ${visible.length} of ${items.length} time slots, ranked by appointment volume.`;
+
+    byId(elementId).appendChild(note);
+  }
+
+
+  function renderStatusDoughnutChart(summary) {
+    const elementId = "analytics-status-chart";
+
+    const total = Number(summary.total);
+    const active = Number(summary.active);
+    const cancelled = Number(summary.cancelled);
+
+    if (
+      ![total, active, cancelled].every(
+        (value) => Number.isInteger(value) && value >= 0
+      ) ||
+      active + cancelled > total
+    ) {
+      throw new Error("Invalid appointment status counts");
+    }
+
+    if (total === 0) {
+      showEmptyChart(elementId);
+      return;
+    }
+
+    const labels = ["Active", "Cancelled"];
+    const values = [active, cancelled];
+    const colors = ["#0f766e", "#dc6262"];
+
+    const other = total - active - cancelled;
+
+    if (other > 0) {
+      labels.push("Other");
+      values.push(other);
+      colors.push("#64748b");
+    }
+
+    const description = labels.map(
+      (label, index) =>
+        `${label}: ${values[index]} appointments`
+    ).join("; ");
+
+    createInteractiveChart(elementId, {
+      type: "doughnut",
+      data: {
+        labels: labels,
+        datasets: [{
+          data: values,
+          backgroundColor: colors,
+          borderColor: "#ffffff",
+          borderWidth: 3,
+          hoverOffset: 8
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: false,
+        cutout: "68%",
+        plugins: {
+          legend: {
+            display: true,
+            position: "bottom",
+            onClick: () => {},
+            labels: {
+              padding: 16,
+              usePointStyle: true
+            }
+          },
+          tooltip: {
+            enabled: true,
+            callbacks: {
+              label: function(context) {
+                const count = Number(context.raw);
+                const percentage = (count / total * 100).toFixed(1);
+
+                return `${context.label}: ${count} (${percentage}%)`;
+              }
+            }
+          }
+        }
+      }
+    }, description);
+
+    const note = document.createElement("p");
+    note.className = "analytics-status";
+
+    note.textContent = labels.map(
+      (label, index) => {
+        const percentage =
+          (values[index] / total * 100).toFixed(1);
+
+        return `${label}: ${values[index]} (${percentage}%)`;
+      }
+    ).join(" | ");
+
+    byId(elementId).appendChild(note);
   }
 
   let appliedStartDate = "";
@@ -109,8 +446,10 @@
     [
       "analytics-daily-chart",
       "analytics-doctor-chart",
-      "analytics-time-chart"
+      "analytics-time-chart",
+      "analytics-status-chart"
     ].forEach((id) => {
+      destroyChart(id);
       byId(id).replaceChildren();
     });
   }
@@ -283,25 +622,13 @@
       byId("analytics-doctor-count").textContent =
         String(data.doctors.length);
 
-      renderChart(
-        "analytics-daily-chart",
-        data.daily.slice(-12),
-        "date"
-      );
+      renderDailyLineChart(data.daily, data.kpis);
 
-      renderChart(
-        "analytics-doctor-chart",
-        data.doctors,
-        "doctor",
-        10
-      );
+      renderDoctorBarChart(data.doctors);
 
-      renderChart(
-        "analytics-time-chart",
-        data.times,
-        "time",
-        10
-      );
+      renderTimeBarChart(data.times);
+
+      renderStatusDoughnutChart(summary);
 
       setStatus(
         `Analytics updated. ${Number(summary.total) || 0} appointments analyzed.`

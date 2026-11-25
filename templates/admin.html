@@ -198,6 +198,15 @@
               </p>
             </div>
           </div>
+          <div class="analytics-panel analytics-wide">
+            <h3>Appointment Status Distribution</h3>
+            <div class="analytics-chart"
+                 id="analytics-status-chart">
+              <p class="analytics-status">
+                Analytics chart not loaded yet.
+              </p>
+            </div>
+          </div>
         </div>
 
         <p class="analytics-status"
@@ -326,6 +335,7 @@
     <script src="{{ url_for('static', filename='admin.js') }}"></script>
 
     <script src="{{ url_for('static', filename='whatsapp_monitoring.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/chartjs/chart.umd.min.js') }}"></script>
     <script src="{{ url_for('static', filename='analytics.js') }}"></script>
   </body>
 </html>

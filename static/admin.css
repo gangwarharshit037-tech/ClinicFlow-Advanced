@@ -363,3 +363,51 @@
         font-size: 20px;
     }
 }
+
+/* V2 Interactive Chart.js Visualizations */
+
+.analytics-canvas-wrapper {
+    position: relative;
+    width: 100%;
+    min-width: 0;
+    height: 300px;
+}
+
+#analytics-daily-chart .analytics-canvas-wrapper {
+    height: 320px;
+}
+
+#analytics-status-chart .analytics-canvas-wrapper {
+    height: 300px;
+    max-width: 520px;
+    margin: 0 auto;
+}
+
+.analytics-canvas-wrapper canvas {
+    display: block;
+    max-width: 100%;
+}
+
+@media (max-width: 700px) {
+    .analytics-canvas-wrapper {
+        height: 260px;
+    }
+
+    #analytics-daily-chart .analytics-canvas-wrapper {
+        height: 260px;
+    }
+
+    #analytics-status-chart .analytics-canvas-wrapper {
+        height: 280px;
+    }
+}
+
+@media (max-width: 480px) {
+    .analytics-panel {
+        padding: 12px;
+    }
+
+    .analytics-canvas-wrapper {
+        height: 240px;
+    }
+}
