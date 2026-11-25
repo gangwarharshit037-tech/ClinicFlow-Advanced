@@ -71,6 +71,7 @@
 
   let appliedStartDate = "";
   let appliedEndDate = "";
+  let appliedDoctor = "";
   let requestSequence = 0;
 
   function setFilterError(message) {
@@ -109,6 +110,7 @@
 
     const startDate = appliedStartDate;
     const endDate = appliedEndDate;
+    const doctor = appliedDoctor;
 
     const params = new URLSearchParams();
 
@@ -120,6 +122,10 @@
       params.set("end_date", endDate);
     }
 
+    if (doctor) {
+      params.set("doctor", doctor);
+    }
+
     const query = params.toString();
 
     const endpoint = query
@@ -129,7 +135,7 @@
     const period = periodLabel(startDate, endDate);
 
     byId("analytics-period").textContent =
-      `Selected period: ${period}`;
+      `Selected period: ${period} | Doctor: ${doctor || "All Doctors"}`;
 
     clearAnalytics();
 
@@ -223,6 +229,7 @@
     const form = byId("analytics-filter-form");
     const startInput = byId("analytics-start-date");
     const endInput = byId("analytics-end-date");
+    const doctorInput = byId("analytics-doctor");
     const resetButton = byId("analytics-reset-button");
 
     form.addEventListener("submit", (event) => {
@@ -230,6 +237,7 @@
 
       const start = startInput.value;
       const end = endInput.value;
+      const doctor = doctorInput.value;
 
       if (start && end && start > end) {
         setFilterError(
@@ -242,6 +250,7 @@
 
       appliedStartDate = start;
       appliedEndDate = end;
+      appliedDoctor = doctor;
 
       loadAnalytics();
     });
@@ -249,9 +258,11 @@
     resetButton.addEventListener("click", () => {
       startInput.value = "";
       endInput.value = "";
+      doctorInput.value = "";
 
       appliedStartDate = "";
       appliedEndDate = "";
+      appliedDoctor = "";
 
       setFilterError("");
 
@@ -259,6 +270,10 @@
     });
 
     startInput.addEventListener("input", () => {
+      setFilterError("");
+    });
+
+    doctorInput.addEventListener("change", () => {
       setFilterError("");
     });
 

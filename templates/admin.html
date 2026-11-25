@@ -69,6 +69,16 @@
             <input type="date" id="analytics-end-date">
           </div>
 
+          <div class="analytics-filter-field analytics-doctor-field">
+            <label for="analytics-doctor">Select Doctor</label>
+            <select id="analytics-doctor">
+              <option value="">All Doctors</option>
+              {% for doctor in doctors %}
+              <option value="{{ doctor }}">{{ doctor }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
           <div class="analytics-filter-actions">
             <button type="submit" id="analytics-apply-button">
               Apply Filters

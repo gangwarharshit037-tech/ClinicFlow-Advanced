@@ -244,3 +244,51 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* V2 Analytics Doctor Filters */
+
+.analytics-filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) minmax(0, 1.5fr);
+}
+
+.analytics-filter-field select {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    min-height: 44px;
+    padding: 11px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    background: white;
+    color: #16313d;
+    font: inherit;
+}
+
+.analytics-filter-actions {
+    grid-column: 1 / -1;
+}
+
+.analytics-filters select:focus-visible {
+    outline: 2px solid #0f766e;
+    outline-offset: 3px;
+}
+
+#analytics-period {
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 900px) {
+    .analytics-filters {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .analytics-doctor-field {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 480px) {
+    .analytics-filters {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}

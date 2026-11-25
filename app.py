@@ -481,7 +481,7 @@ def login():
 @app.get('/admin')
 def admin():
     if not session.get('admin'):return redirect(url_for('login_page'))
-    return render_template('admin.html',csrf=session['csrf'],live=LIVE,whatsapp_outbound_enabled=(LIVE and os.getenv('WHATSAPP_OUTBOUND_ENABLED','false').strip().lower()=='true'))
+    return render_template('admin.html',csrf=session['csrf'],live=LIVE,doctors=DOCTORS,whatsapp_outbound_enabled=(LIVE and os.getenv('WHATSAPP_OUTBOUND_ENABLED','false').strip().lower()=='true'))
 @app.post('/admin/logout')
 @admin_required
 @csrf_required
