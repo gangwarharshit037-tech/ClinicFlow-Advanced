@@ -91,7 +91,17 @@
       "analytics-active-count",
       "analytics-cancelled-count",
       "analytics-cancellation-rate",
-      "analytics-doctor-count"
+      "analytics-doctor-count",
+      "analytics-active-rate",
+      "analytics-average-daily",
+      "analytics-reporting-days",
+      "analytics-busiest-day",
+      "analytics-busiest-detail",
+      "analytics-peak-time",
+      "analytics-peak-detail",
+      "analytics-top-doctor",
+      "analytics-doctor-detail",
+      "analytics-reporting-period"
     ].forEach((id) => {
       byId(id).textContent = "--";
     });
@@ -105,6 +115,84 @@
     });
   }
 
+  function renderTopKpi(metric, valueId, detailId) {
+    if (!metric || !Array.isArray(metric.ties)) {
+      throw new Error("Invalid top KPI response");
+    }
+
+    const valueElement = byId(valueId);
+    const detailElement = byId(detailId);
+
+    if (metric.value === null) {
+      valueElement.textContent = "N/A";
+      detailElement.textContent = "No matching appointments";
+      return;
+    }
+
+    valueElement.textContent = String(metric.value);
+
+    const count = Number(metric.total);
+    const label = count === 1 ? "appointment" : "appointments";
+
+    let detail = `${count} ${label}`;
+
+    if (metric.ties.length > 1) {
+      detail += ` | ${metric.ties.length}-way tie: `;
+      detail += metric.ties.join(", ");
+    }
+
+    detailElement.textContent = detail;
+  }
+
+  function renderAdvancedKpis(kpis, total) {
+    const activeRate = Number(kpis.active_booking_rate);
+    const average = Number(kpis.average_daily_appointments);
+    const days = Number(kpis.reporting_days);
+
+    if (
+      !Number.isFinite(activeRate) ||
+      !Number.isFinite(average) ||
+      !Number.isInteger(days) ||
+      days < 0
+    ) {
+      throw new Error("Invalid advanced KPI values");
+    }
+
+    byId("analytics-active-rate").textContent =
+      total > 0 ? `${activeRate.toFixed(1)}%` : "N/A";
+
+    byId("analytics-average-daily").textContent =
+      days > 0 ? average.toFixed(2) : "N/A";
+
+    byId("analytics-reporting-days").textContent =
+      days > 0
+        ? `Over ${days} calendar ${days === 1 ? "day" : "days"}`
+        : "Reporting duration unavailable";
+
+    byId("analytics-reporting-period").textContent =
+      kpis.period_start && kpis.period_end
+        ? `Reporting period: ${kpis.period_start} to ${kpis.period_end} (${days} ${days === 1 ? "day" : "days"})`
+        : "Reporting period: Insufficient date information";
+
+    renderTopKpi(
+      kpis.busiest_day,
+      "analytics-busiest-day",
+      "analytics-busiest-detail"
+    );
+
+    renderTopKpi(
+      kpis.peak_appointment_time,
+      "analytics-peak-time",
+      "analytics-peak-detail"
+    );
+
+    renderTopKpi(
+      kpis.most_booked_doctor,
+      "analytics-top-doctor",
+      "analytics-doctor-detail"
+    );
+  }
+
   async function loadAnalytics() {
     const sequence = ++requestSequence;
 
@@ -113,6 +201,7 @@
     const doctor = appliedDoctor;
 
     const params = new URLSearchParams();
+    params.set("include_kpis", "1");
 
     if (startDate) {
       params.set("start_date", startDate);
@@ -162,6 +251,7 @@
       if (
         !data ||
         !data.summary ||
+        !data.kpis ||
         !Array.isArray(data.doctors) ||
         !Array.isArray(data.daily) ||
         !Array.isArray(data.times)
@@ -170,6 +260,11 @@
       }
 
       const summary = data.summary;
+
+      renderAdvancedKpis(
+        data.kpis,
+        Number(summary.total)
+      );
 
       byId("analytics-total-count").textContent =
         String(Number(summary.total) || 0);

@@ -292,3 +292,74 @@
         grid-template-columns: minmax(0, 1fr);
     }
 }
+
+/* V2 Advanced KPI Cards */
+
+.analytics-kpi-heading {
+    margin-top: 28px;
+    margin-bottom: 8px;
+    font-size: 18px;
+    color: #16313d;
+}
+
+.analytics-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    margin: 16px 0;
+}
+
+.analytics-kpi-grid .stat-card {
+    min-width: 0;
+    padding: 20px;
+    border-top: 3px solid #0f766e;
+}
+
+.analytics-kpi-grid .stat-card h3 {
+    margin-top: 0;
+}
+
+.analytics-kpi-grid .number {
+    overflow-wrap: anywhere;
+    font-variant-numeric: tabular-nums;
+}
+
+.analytics-kpi-grid .analytics-kpi-value {
+    font-size: clamp(18px, 2.5vw, 24px);
+    line-height: 1.4;
+}
+
+.analytics-kpi-detail {
+    color: #64748b;
+    font-size: 13px;
+    line-height: 1.6;
+    margin: 10px 0 0;
+    overflow-wrap: anywhere;
+}
+
+.analytics-kpi-wide {
+    grid-column: 1 / -1;
+}
+
+#analytics-reporting-period {
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 600px) {
+    .analytics-kpi-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 12px;
+    }
+
+    .analytics-kpi-grid .stat-card {
+        padding: 16px;
+    }
+
+    .analytics-kpi-grid .number {
+        font-size: 24px;
+    }
+
+    .analytics-kpi-grid .analytics-kpi-value {
+        font-size: 20px;
+    }
+}
