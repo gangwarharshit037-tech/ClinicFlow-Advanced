@@ -500,6 +500,10 @@ def analytics():
 
     start_date = request.args.get('start_date')
     end_date = request.args.get('end_date')
+    doctor = request.args.get('doctor')
+
+    if doctor is not None and doctor not in DOCTORS:
+        return error('Invalid doctor selection.', 400)
 
     for name, value in (
         ('start_date', start_date),
@@ -529,6 +533,10 @@ def analytics():
     if end_date:
         conditions.append('date <= ?')
         params.append(end_date)
+
+    if doctor is not None:
+        conditions.append('doctor = ?')
+        params.append(doctor)
 
     where_sql = (
         'WHERE ' + ' AND '.join(conditions)
