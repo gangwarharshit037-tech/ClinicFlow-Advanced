@@ -496,10 +496,49 @@ def list_appointments():
 @app.get('/api/admin/analytics')
 @admin_required
 def analytics():
-    """Return aggregated appointment analytics without patient details."""
+    """Return filtered appointment analytics without patient details."""
 
-    with conn() as c:
-        summary = dict(c.execute("""
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+
+    for name, value in (
+        ('start_date', start_date),
+        ('end_date', end_date)
+    ):
+        if value is None:
+            continue
+
+        if not re.fullmatch(r'[0-9]{4}-[0-9]{2}-[0-9]{2}', value):
+            return error(f'Invalid {name}. Use YYYY-MM-DD.', 400)
+
+        try:
+            date.fromisoformat(value)
+        except ValueError:
+            return error(f'Invalid {name}. Use a valid date.', 400)
+
+    if start_date and end_date and start_date > end_date:
+        return error('start_date must not be after end_date', 400)
+
+    conditions = []
+    params = []
+
+    if start_date:
+        conditions.append('date >= ?')
+        params.append(start_date)
+
+    if end_date:
+        conditions.append('date <= ?')
+        params.append(end_date)
+
+    where_sql = (
+        'WHERE ' + ' AND '.join(conditions)
+        if conditions else ''
+    )
+
+    with closing(conn()) as c:
+        c.execute("BEGIN")
+
+        summary = dict(c.execute(f"""
             SELECT
                 COUNT(*) AS total,
                 COALESCE(SUM(
@@ -509,33 +548,37 @@ def analytics():
                     CASE WHEN status = 'Cancelled' THEN 1 ELSE 0 END
                 ), 0) AS cancelled
             FROM appointments
-        """).fetchone())
+            {where_sql}
+        """, params).fetchone())
 
         doctors = [
-            dict(row) for row in c.execute("""
+            dict(row) for row in c.execute(f"""
                 SELECT doctor, COUNT(*) AS total
                 FROM appointments
+                {where_sql}
                 GROUP BY doctor
                 ORDER BY total DESC, doctor ASC
-            """)
+            """, params)
         ]
 
         daily = [
-            dict(row) for row in c.execute("""
+            dict(row) for row in c.execute(f"""
                 SELECT date, COUNT(*) AS total
                 FROM appointments
+                {where_sql}
                 GROUP BY date
                 ORDER BY date ASC
-            """)
+            """, params)
         ]
 
         times = [
-            dict(row) for row in c.execute("""
+            dict(row) for row in c.execute(f"""
                 SELECT time, COUNT(*) AS total
                 FROM appointments
+                {where_sql}
                 GROUP BY time
                 ORDER BY total DESC, time ASC
-            """)
+            """, params)
         ]
 
     total = summary['total']
@@ -554,6 +597,7 @@ def analytics():
         'daily': daily,
         'times': times
     })
+
 
 @app.post('/api/admin/appointments/<int:aid>/cancel')
 @admin_required
