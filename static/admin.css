@@ -140,3 +140,107 @@
 .admin-export-button { margin:10px 5px; padding:10px 15px; }
 .admin-wa-refresh-button { margin-top:15px; padding:10px 16px; }
 .admin-wa-review-section { margin-top:24px; }
+
+
+/* V2 Analytics Date Filters */
+
+.analytics-filters {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
+    align-items: end;
+    gap: 16px;
+    padding: 18px;
+    margin: 20px 0;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+}
+
+.analytics-filter-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+}
+
+.analytics-filter-field label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #334155;
+}
+
+.analytics-filter-field input {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    padding: 11px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    background: white;
+    color: #16313d;
+    font: inherit;
+}
+
+.analytics-filter-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.analytics-filter-actions button {
+    margin: 0;
+    min-height: 44px;
+}
+
+#analytics-reset-button {
+    background: #475569;
+}
+
+.analytics-filter-error {
+    color: #b91c1c;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.analytics-filter-error:empty {
+    display: none;
+}
+
+#analytics-dashboard .dashboard-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.analytics-filters input:focus-visible,
+.analytics-filters button:focus-visible {
+    outline: 2px solid #0f766e;
+    outline-offset: 3px;
+}
+
+@media (max-width: 900px) {
+    .analytics-filters {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .analytics-filter-actions {
+        grid-column: 1 / -1;
+    }
+
+    #analytics-dashboard .dashboard-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 480px) {
+    .analytics-filters {
+        grid-template-columns: 1fr;
+        padding: 12px;
+    }
+
+    .analytics-filter-actions button {
+        flex: 1;
+    }
+
+    #analytics-dashboard .dashboard-stats {
+        grid-template-columns: 1fr;
+    }
+}

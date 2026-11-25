@@ -57,13 +57,60 @@
           cancellation statistics and busiest time slots.
         </p>
 
-        <div class="dashboard-stats">
+
+        <form id="analytics-filter-form" class="analytics-filters">
+          <div class="analytics-filter-field">
+            <label for="analytics-start-date">Start Date</label>
+            <input type="date" id="analytics-start-date">
+          </div>
+
+          <div class="analytics-filter-field">
+            <label for="analytics-end-date">End Date</label>
+            <input type="date" id="analytics-end-date">
+          </div>
+
+          <div class="analytics-filter-actions">
+            <button type="submit" id="analytics-apply-button">
+              Apply Filters
+            </button>
+
+            <button type="button" id="analytics-reset-button">
+              Reset Filters
+            </button>
+          </div>
+        </form>
+
+        <p id="analytics-filter-error"
+           class="analytics-filter-error"
+           role="alert"></p>
+
+        <p id="analytics-period"
+           class="analytics-status">
+          Selected period: All time
+        </p>
+
+<div class="dashboard-stats">
+          <div class="stat-card">
+            <h3>Total Appointments</h3>
+            <div class="number" id="analytics-total-count">--</div>
+          </div>
+
+          <div class="stat-card">
+            <h3>Active Appointments</h3>
+            <div class="number" id="analytics-active-count">--</div>
+          </div>
+
+          <div class="stat-card">
+            <h3>Cancelled Appointments</h3>
+            <div class="number" id="analytics-cancelled-count">--</div>
+          </div>
+
           <div class="stat-card">
             <h3>Cancellation Rate</h3>
             <div class="number" id="analytics-cancellation-rate">--</div>
           </div>
           <div class="stat-card">
-            <h3>Total Doctors</h3>
+            <h3>Doctors with Appointments</h3>
             <div class="number" id="analytics-doctor-count">--</div>
           </div>
         </div>

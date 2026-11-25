@@ -69,20 +69,89 @@
     });
   }
 
+  let appliedStartDate = "";
+  let appliedEndDate = "";
+  let requestSequence = 0;
+
+  function setFilterError(message) {
+    byId("analytics-filter-error").textContent = message;
+  }
+
+  function periodLabel(start, end) {
+    if (start && end) return `${start} to ${end}`;
+    if (start) return `From ${start}`;
+    if (end) return `Through ${end}`;
+    return "All time";
+  }
+
+  function clearAnalytics() {
+    [
+      "analytics-total-count",
+      "analytics-active-count",
+      "analytics-cancelled-count",
+      "analytics-cancellation-rate",
+      "analytics-doctor-count"
+    ].forEach((id) => {
+      byId(id).textContent = "--";
+    });
+
+    [
+      "analytics-daily-chart",
+      "analytics-doctor-chart",
+      "analytics-time-chart"
+    ].forEach((id) => {
+      byId(id).replaceChildren();
+    });
+  }
+
   async function loadAnalytics() {
+    const sequence = ++requestSequence;
+
+    const startDate = appliedStartDate;
+    const endDate = appliedEndDate;
+
+    const params = new URLSearchParams();
+
+    if (startDate) {
+      params.set("start_date", startDate);
+    }
+
+    if (endDate) {
+      params.set("end_date", endDate);
+    }
+
+    const query = params.toString();
+
+    const endpoint = query
+      ? `/api/admin/analytics?${query}`
+      : "/api/admin/analytics";
+
+    const period = periodLabel(startDate, endDate);
+
+    byId("analytics-period").textContent =
+      `Selected period: ${period}`;
+
+    clearAnalytics();
+
     setStatus("Loading appointment analytics...");
 
     try {
-      const response = await fetch("/api/admin/analytics", {
+      const response = await fetch(endpoint, {
         credentials: "same-origin",
         cache: "no-store"
       });
 
+      if (sequence !== requestSequence) return;
+
       if (!response.ok) {
-        throw new Error(`Analytics API returned HTTP ${response.status}`);
+        throw new Error(
+          `Analytics API returned HTTP ${response.status}`
+        );
       }
 
       const data = await response.json();
+
+      if (sequence !== requestSequence) return;
 
       if (
         !data ||
@@ -94,7 +163,18 @@
         throw new Error("Invalid analytics response");
       }
 
-      const rate = Number(data.summary.cancellation_rate);
+      const summary = data.summary;
+
+      byId("analytics-total-count").textContent =
+        String(Number(summary.total) || 0);
+
+      byId("analytics-active-count").textContent =
+        String(Number(summary.active) || 0);
+
+      byId("analytics-cancelled-count").textContent =
+        String(Number(summary.cancelled) || 0);
+
+      const rate = Number(summary.cancellation_rate);
 
       byId("analytics-cancellation-rate").textContent =
         `${Number.isFinite(rate) ? rate.toFixed(1) : "0.0"}%`;
@@ -102,12 +182,9 @@
       byId("analytics-doctor-count").textContent =
         String(data.doctors.length);
 
-      // Show the latest 12 appointment dates in chronological order.
-      const recentDays = data.daily.slice(-12);
-
       renderChart(
         "analytics-daily-chart",
-        recentDays,
+        data.daily.slice(-12),
         "date"
       );
 
@@ -126,20 +203,80 @@
       );
 
       setStatus(
-        `Analytics updated. ${Number(data.summary.total) || 0} appointments analyzed.`
+        `Analytics updated. ${Number(summary.total) || 0} appointments analyzed.`
       );
 
     } catch (error) {
+      if (sequence !== requestSequence) return;
+
+      clearAnalytics();
+
       console.error("ClinicFlow analytics:", error);
-      setStatus("Unable to load analytics. Please try refreshing.");
+
+      setStatus(
+        "Unable to load analytics. Please apply the filters again."
+      );
     }
+  }
+
+  function initializeAnalytics() {
+    const form = byId("analytics-filter-form");
+    const startInput = byId("analytics-start-date");
+    const endInput = byId("analytics-end-date");
+    const resetButton = byId("analytics-reset-button");
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      const start = startInput.value;
+      const end = endInput.value;
+
+      if (start && end && start > end) {
+        setFilterError(
+          "Start date must not be after end date."
+        );
+        return;
+      }
+
+      setFilterError("");
+
+      appliedStartDate = start;
+      appliedEndDate = end;
+
+      loadAnalytics();
+    });
+
+    resetButton.addEventListener("click", () => {
+      startInput.value = "";
+      endInput.value = "";
+
+      appliedStartDate = "";
+      appliedEndDate = "";
+
+      setFilterError("");
+
+      loadAnalytics();
+    });
+
+    startInput.addEventListener("input", () => {
+      setFilterError("");
+    });
+
+    endInput.addEventListener("input", () => {
+      setFilterError("");
+    });
+
+    loadAnalytics();
   }
 
   // Load analytics after the HTML and existing admin scripts are ready.
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", loadAnalytics);
+    document.addEventListener(
+      "DOMContentLoaded",
+      initializeAnalytics
+    );
   } else {
-    loadAnalytics();
+    initializeAnalytics();
   }
 
   // Allow a future refresh button to call this function.
