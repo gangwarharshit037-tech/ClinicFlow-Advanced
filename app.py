@@ -596,7 +596,7 @@ def analytics():
         if total else 0.0
     )
 
-    return jsonify({
+    result = {
         'summary': {
             **summary,
             'cancellation_rate': cancellation_rate
@@ -604,7 +604,72 @@ def analytics():
         'doctors': doctors,
         'daily': daily,
         'times': times
-    })
+    }
+
+    if request.args.get('include_kpis') == '1':
+        active_rate = (
+            round(summary['active'] / total * 100, 2)
+            if total else 0.0
+        )
+
+        period_start = start_date or (
+            daily[0]['date'] if daily else None
+        )
+
+        period_end = end_date or (
+            daily[-1]['date'] if daily else None
+        )
+
+        reporting_days = 0
+
+        if period_start and period_end:
+            reporting_days = max(
+                0,
+                (
+                    date.fromisoformat(period_end)
+                    - date.fromisoformat(period_start)
+                ).days + 1
+            )
+
+        average_daily = (
+            round(total / reporting_days, 2)
+            if reporting_days else 0.0
+        )
+
+        def top_metric(rows, field):
+            if not rows:
+                return {
+                    'value': None,
+                    'total': 0,
+                    'ties': []
+                }
+
+            highest = max(row['total'] for row in rows)
+
+            winners = sorted(
+                row[field]
+                for row in rows
+                if row['total'] == highest
+            )
+
+            return {
+                'value': winners[0],
+                'total': highest,
+                'ties': winners
+            }
+
+        result['kpis'] = {
+            'active_booking_rate': active_rate,
+            'average_daily_appointments': average_daily,
+            'reporting_days': reporting_days,
+            'period_start': period_start,
+            'period_end': period_end,
+            'busiest_day': top_metric(daily, 'date'),
+            'peak_appointment_time': top_metric(times, 'time'),
+            'most_booked_doctor': top_metric(doctors, 'doctor')
+        }
+
+    return jsonify(result)
 
 
 @app.post('/api/admin/appointments/<int:aid>/cancel')
