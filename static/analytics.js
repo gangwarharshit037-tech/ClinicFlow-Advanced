@@ -532,6 +532,304 @@
     );
   }
 
+
+  // V2 Period Comparison
+
+  function clearComparison(message) {
+    destroyChart("analytics-comparison-chart");
+    byId("analytics-comparison-chart").replaceChildren();
+
+    byId("comparison-content").hidden = true;
+    byId("comparison-message").textContent = message;
+
+    const keys = [
+      "total",
+      "active",
+      "cancelled",
+      "active-rate",
+      "cancellation-rate",
+      "average-daily"
+    ];
+
+    for (const key of keys) {
+      byId(`comparison-${key}-current`).textContent = "--";
+      byId(`comparison-${key}-previous`).textContent = "--";
+
+      const change = byId(`comparison-${key}-change`);
+      change.textContent = "--";
+      change.dataset.direction = "neutral";
+    }
+
+    byId("comparison-current-period").textContent = "--";
+    byId("comparison-previous-period").textContent = "--";
+    byId("comparison-reporting-days").textContent = "--";
+  }
+
+  function formatComparisonValue(value, type) {
+    if (value === null) return "N/A";
+
+    if (typeof value !== "number" || !Number.isFinite(value)) {
+      throw new Error("Invalid comparison metric");
+    }
+
+    if (type === "rate") {
+      return `${value.toFixed(2)}%`;
+    }
+
+    if (type === "average") {
+      return value.toFixed(2);
+    }
+
+    return String(value);
+  }
+
+  function renderComparisonCard(
+    key,
+    current,
+    previous,
+    change,
+    valueType,
+    changeType
+  ) {
+    byId(`comparison-${key}-current`).textContent =
+      formatComparisonValue(current, valueType);
+
+    byId(`comparison-${key}-previous`).textContent =
+      formatComparisonValue(previous, valueType);
+
+    const element = byId(`comparison-${key}-change`);
+
+    element.dataset.direction = "neutral";
+
+    if (change === null) {
+      element.textContent = "N/A";
+      return;
+    }
+
+    if (typeof change !== "number" || !Number.isFinite(change)) {
+      throw new Error("Invalid comparison change");
+    }
+
+    if (change === 0) {
+      element.textContent = "No change";
+      return;
+    }
+
+    const increase = change > 0;
+    const direction = increase ? "Increase" : "Decrease";
+    const magnitude = Math.abs(change);
+
+    element.dataset.direction =
+      increase ? "increase" : "decrease";
+
+    if (changeType === "percent") {
+      element.textContent =
+        `${direction}: ${magnitude.toFixed(2)}%`;
+
+    } else if (changeType === "points") {
+      element.textContent =
+        `${direction}: ${magnitude.toFixed(2)} pp`;
+
+    } else {
+      const unit =
+        magnitude === 1 ? "appointment" : "appointments";
+
+      element.textContent =
+        `${direction}: ${magnitude} ${unit}`;
+    }
+  }
+
+
+  function renderComparisonChart(current, previous) {
+    const elementId = "analytics-comparison-chart";
+
+    if (current.total === 0 && previous.total === 0) {
+      showEmptyChart(elementId);
+      return;
+    }
+
+    const labels = [
+      "Total",
+      "Active",
+      "Cancelled"
+    ];
+
+    const previousValues = [
+      previous.total,
+      previous.active,
+      previous.cancelled
+    ];
+
+    const currentValues = [
+      current.total,
+      current.active,
+      current.cancelled
+    ];
+
+    const description = labels.map(
+      (label, index) =>
+        `${label}: previous ${previousValues[index]}, current ${currentValues[index]}`
+    ).join("; ");
+
+    createInteractiveChart(elementId, {
+      type: "bar",
+
+      data: {
+        labels: labels,
+
+        datasets: [
+          {
+            label: "Previous Period",
+            data: previousValues,
+            backgroundColor: "#94a3b8",
+            hoverBackgroundColor: "#64748b",
+            borderRadius: 5,
+            maxBarThickness: 48
+          },
+          {
+            label: "Current Period",
+            data: currentValues,
+            backgroundColor: "#0f766e",
+            hoverBackgroundColor: "#115e59",
+            borderRadius: 5,
+            maxBarThickness: 48
+          }
+        ]
+      },
+
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: false,
+
+        interaction: {
+          mode: "index",
+          intersect: false
+        },
+
+        plugins: {
+          legend: {
+            display: true,
+            position: "bottom"
+          },
+
+          tooltip: {
+            enabled: true
+          }
+        },
+
+        scales: {
+          y: {
+            beginAtZero: true,
+
+            ticks: {
+              precision: 0
+            }
+          }
+        }
+      }
+    }, description);
+  }
+
+  function renderPeriodComparison(comparison, doctor) {
+    if (!comparison || typeof comparison.available !== "boolean") {
+      throw new Error("Invalid period comparison response");
+    }
+
+    if (!comparison.available) {
+      clearComparison(
+        comparison.reason ||
+        "Select both start and end dates to compare periods."
+      );
+      return;
+    }
+
+    const current = comparison.current;
+    const previous = comparison.previous;
+    const changes = comparison.changes;
+    const days = comparison.reporting_days;
+
+    if (
+      !current ||
+      !previous ||
+      !changes ||
+      !Number.isInteger(days) ||
+      days < 1
+    ) {
+      throw new Error("Invalid period comparison data");
+    }
+
+    byId("comparison-current-period").textContent =
+      `${current.start_date} to ${current.end_date}`;
+
+    byId("comparison-previous-period").textContent =
+      `${previous.start_date} to ${previous.end_date}`;
+
+    byId("comparison-reporting-days").textContent =
+      `${days} calendar ${days === 1 ? "day" : "days"} per period | Doctor: ${doctor || "All Doctors"}`;
+
+    renderComparisonCard(
+      "total",
+      current.total,
+      previous.total,
+      changes.total_growth_percentage,
+      "count",
+      "percent"
+    );
+
+    renderComparisonCard(
+      "active",
+      current.active,
+      previous.active,
+      changes.active_difference,
+      "count",
+      "count"
+    );
+
+    renderComparisonCard(
+      "cancelled",
+      current.cancelled,
+      previous.cancelled,
+      changes.cancelled_difference,
+      "count",
+      "count"
+    );
+
+    renderComparisonCard(
+      "active-rate",
+      current.active_booking_rate,
+      previous.active_booking_rate,
+      changes.active_rate_percentage_points,
+      "rate",
+      "points"
+    );
+
+    renderComparisonCard(
+      "cancellation-rate",
+      current.cancellation_rate,
+      previous.cancellation_rate,
+      changes.cancellation_rate_percentage_points,
+      "rate",
+      "points"
+    );
+
+    renderComparisonCard(
+      "average-daily",
+      current.average_daily_appointments,
+      previous.average_daily_appointments,
+      changes.average_daily_growth_percentage,
+      "average",
+      "percent"
+    );
+
+    byId("comparison-message").textContent =
+      "Comparing the selected period with the immediately preceding period.";
+
+    byId("comparison-content").hidden = false;
+
+    renderComparisonChart(current, previous);
+  }
+
   async function loadAnalytics() {
     const sequence = ++requestSequence;
 
@@ -541,6 +839,7 @@
 
     const params = new URLSearchParams();
     params.set("include_kpis", "1");
+    params.set("include_comparison", "1");
 
     if (startDate) {
       params.set("start_date", startDate);
@@ -566,6 +865,7 @@
       `Selected period: ${period} | Doctor: ${doctor || "All Doctors"}`;
 
     clearAnalytics();
+    clearComparison("Loading period comparison...");
 
     setStatus("Loading appointment analytics...");
 
@@ -617,7 +917,11 @@
       const rate = Number(summary.cancellation_rate);
 
       byId("analytics-cancellation-rate").textContent =
-        `${Number.isFinite(rate) ? rate.toFixed(1) : "0.0"}%`;
+        Number(summary.total) > 0 &&
+        summary.cancellation_rate != null &&
+        Number.isFinite(rate)
+          ? `${rate.toFixed(1)}%`
+          : "N/A";
 
       byId("analytics-doctor-count").textContent =
         String(data.doctors.length);
@@ -630,6 +934,8 @@
 
       renderStatusDoughnutChart(summary);
 
+      renderPeriodComparison(data.comparison, doctor);
+
       setStatus(
         `Analytics updated. ${Number(summary.total) || 0} appointments analyzed.`
       );
@@ -638,6 +944,7 @@
       if (sequence !== requestSequence) return;
 
       clearAnalytics();
+      clearComparison("Unable to load period comparison.");
 
       console.error("ClinicFlow analytics:", error);
 

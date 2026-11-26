@@ -168,6 +168,136 @@
           Daily averages include calendar days without bookings.
         </p>
 
+
+        <!-- V2 Period Comparison -->
+        <div id="analytics-comparison"
+             aria-labelledby="comparison-heading">
+
+          <h3 id="comparison-heading"
+              class="analytics-kpi-heading">
+            Period Comparison
+          </h3>
+
+          <p id="comparison-message"
+             class="analytics-status"
+             role="status">
+            Select both start and end dates to compare periods.
+          </p>
+
+          <div id="comparison-content" hidden>
+
+            <div class="comparison-periods">
+              <div>
+                <strong>Current Period</strong>
+                <p id="comparison-current-period">--</p>
+              </div>
+
+              <div>
+                <strong>Previous Period</strong>
+                <p id="comparison-previous-period">--</p>
+              </div>
+            </div>
+
+            <p id="comparison-reporting-days"
+               class="analytics-status">--</p>
+
+            <div class="comparison-grid">
+
+            <div class="stat-card">
+              <h3>Total Appointments</h3>
+              <div class="number"
+                   id="comparison-total-current">--</div>
+              <p class="comparison-change"
+                 id="comparison-total-change">--</p>
+              <p class="analytics-kpi-detail">
+                Previous:
+                <span id="comparison-total-previous">--</span>
+              </p>
+            </div>
+
+            <div class="stat-card">
+              <h3>Active Appointments</h3>
+              <div class="number"
+                   id="comparison-active-current">--</div>
+              <p class="comparison-change"
+                 id="comparison-active-change">--</p>
+              <p class="analytics-kpi-detail">
+                Previous:
+                <span id="comparison-active-previous">--</span>
+              </p>
+            </div>
+
+            <div class="stat-card">
+              <h3>Cancelled Appointments</h3>
+              <div class="number"
+                   id="comparison-cancelled-current">--</div>
+              <p class="comparison-change"
+                 id="comparison-cancelled-change">--</p>
+              <p class="analytics-kpi-detail">
+                Previous:
+                <span id="comparison-cancelled-previous">--</span>
+              </p>
+            </div>
+
+            <div class="stat-card">
+              <h3>Active Booking Rate</h3>
+              <div class="number"
+                   id="comparison-active-rate-current">--</div>
+              <p class="comparison-change"
+                 id="comparison-active-rate-change">--</p>
+              <p class="analytics-kpi-detail">
+                Previous:
+                <span id="comparison-active-rate-previous">--</span>
+              </p>
+            </div>
+
+            <div class="stat-card">
+              <h3>Cancellation Rate</h3>
+              <div class="number"
+                   id="comparison-cancellation-rate-current">--</div>
+              <p class="comparison-change"
+                 id="comparison-cancellation-rate-change">--</p>
+              <p class="analytics-kpi-detail">
+                Previous:
+                <span id="comparison-cancellation-rate-previous">--</span>
+              </p>
+            </div>
+
+            <div class="stat-card">
+              <h3>Average Daily Appointments</h3>
+              <div class="number"
+                   id="comparison-average-daily-current">--</div>
+              <p class="comparison-change"
+                 id="comparison-average-daily-change">--</p>
+              <p class="analytics-kpi-detail">
+                Previous:
+                <span id="comparison-average-daily-previous">--</span>
+              </p>
+            </div>
+            </div>
+
+            <div class="analytics-panel">
+              <h3>Appointment Volume Comparison</h3>
+
+              <div class="analytics-chart"
+                   id="analytics-comparison-chart">
+                <p class="analytics-status">
+                  Select a date range to compare appointments.
+                </p>
+              </div>
+            </div>
+
+            <p class="analytics-status">
+              Both periods contain the same number of calendar
+              days and use the same doctor filter.
+              Rates reflect current appointment statuses.
+              N/A indicates an undefined comparison.
+              pp means percentage points.
+            </p>
+
+          </div>
+        </div>
+
         <div class="analytics-grid">
           <div class="analytics-panel analytics-wide">
             <h3>Daily Appointment Trends</h3>

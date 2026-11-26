@@ -535,11 +535,18 @@ def build_period_comparison(
             2
         )
 
-    def rate_difference(current_value, previous_value):
-        if current_value is None or previous_value is None:
+    def rate_difference(field):
+        if not current['total'] or not previous['total']:
             return None
 
-        return round(current_value - previous_value, 2)
+        numerator = (
+            current[field] * previous['total']
+            - previous[field] * current['total']
+        ) * 100
+
+        denominator = current['total'] * previous['total']
+
+        return round(numerator / denominator, 2)
 
     growth = percentage_change(
         current['total'],
@@ -570,14 +577,8 @@ def build_period_comparison(
             'cancelled_difference': (
                 current['cancelled'] - previous['cancelled']
             ),
-            'active_rate_percentage_points': rate_difference(
-                current['active_booking_rate'],
-                previous['active_booking_rate']
-            ),
-            'cancellation_rate_percentage_points': rate_difference(
-                current['cancellation_rate'],
-                previous['cancellation_rate']
-            ),
+            'active_rate_percentage_points': rate_difference('active'),
+            'cancellation_rate_percentage_points': rate_difference('cancelled'),
             'average_daily_growth_percentage': growth
         }
     }

@@ -1,4 +1,4 @@
-﻿import os
+import os
 import subprocess
 import sys
 
@@ -26,6 +26,7 @@ import pytest
     "date_underflow",
     "unauthorized",
     "privacy_integrity",
+    "rate_precision",
 ])
 def test_period_comparison(tmp_path, case):
     db_path = tmp_path / "comparison_test.db"
@@ -105,6 +106,12 @@ elif CASE == "zero_current":
 
 elif CASE == "both_empty":
     records = []
+elif CASE == "rate_precision":
+    records = [
+        (*record[:-1], "Booked" if index in (0, 4) else "Cancelled")
+        for index, record in enumerate(records)
+        if index != 3
+    ]
 
 with sqlite3.connect(EXPECTED_DB) as conn:
     assert conn.execute(
@@ -297,6 +304,14 @@ elif CASE == "single_day":
     assert current["total"] == 2
     assert previous["total"] == 2
     assert changes["total_growth_percentage"] == 0.0
+
+elif CASE == "rate_precision":
+    assert current["total"] == 6
+    assert previous["total"] == 3
+    assert current["active_booking_rate"] == 16.67
+    assert previous["active_booking_rate"] == 33.33
+    assert changes["active_rate_percentage_points"] == -16.67
+    assert changes["cancellation_rate_percentage_points"] == 16.67
 
 elif CASE == "privacy_integrity":
     assert current["total"] == 6
