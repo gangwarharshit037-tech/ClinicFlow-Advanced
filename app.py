@@ -493,6 +493,96 @@ def list_appointments():
     return jsonify([dict(r) for r in rows])
 
 
+
+def comparison_metrics(summary, days):
+    total = summary['total']
+
+    return {
+        'total': total,
+        'active': summary['active'],
+        'cancelled': summary['cancelled'],
+        'active_booking_rate': (
+            round(summary['active'] / total * 100, 2)
+            if total else None
+        ),
+        'cancellation_rate': (
+            round(summary['cancelled'] / total * 100, 2)
+            if total else None
+        ),
+        'average_daily_appointments': round(total / days, 2)
+    }
+
+
+def build_period_comparison(
+    current_summary,
+    previous_summary,
+    current_start,
+    current_end,
+    previous_start,
+    previous_end,
+    days
+):
+    current = comparison_metrics(current_summary, days)
+    previous = comparison_metrics(previous_summary, days)
+
+    def percentage_change(current_value, previous_value):
+        if previous_value == 0:
+            return None
+
+        return round(
+            (current_value - previous_value)
+            / previous_value * 100,
+            2
+        )
+
+    def rate_difference(current_value, previous_value):
+        if current_value is None or previous_value is None:
+            return None
+
+        return round(current_value - previous_value, 2)
+
+    growth = percentage_change(
+        current['total'],
+        previous['total']
+    )
+
+    return {
+        'available': True,
+        'reporting_days': days,
+        'current': {
+            'start_date': current_start,
+            'end_date': current_end,
+            **current
+        },
+        'previous': {
+            'start_date': previous_start,
+            'end_date': previous_end,
+            **previous
+        },
+        'changes': {
+            'total_difference': (
+                current['total'] - previous['total']
+            ),
+            'total_growth_percentage': growth,
+            'active_difference': (
+                current['active'] - previous['active']
+            ),
+            'cancelled_difference': (
+                current['cancelled'] - previous['cancelled']
+            ),
+            'active_rate_percentage_points': rate_difference(
+                current['active_booking_rate'],
+                previous['active_booking_rate']
+            ),
+            'cancellation_rate_percentage_points': rate_difference(
+                current['cancellation_rate'],
+                previous['cancellation_rate']
+            ),
+            'average_daily_growth_percentage': growth
+        }
+    }
+
+
 @app.get('/api/admin/analytics')
 @admin_required
 def analytics():
@@ -522,6 +612,40 @@ def analytics():
 
     if start_date and end_date and start_date > end_date:
         return error('start_date must not be after end_date', 400)
+
+    include_comparison = (
+        request.args.get('include_comparison') == '1'
+    )
+
+    comparison = None
+    comparison_period = None
+
+    if include_comparison:
+        if not start_date or not end_date:
+            comparison = {
+                'available': False,
+                'reason': 'Select both start and end dates.'
+            }
+        else:
+            current_start = date.fromisoformat(start_date)
+            current_end = date.fromisoformat(end_date)
+
+            days = (current_end - current_start).days + 1
+
+            try:
+                previous_end = current_start - timedelta(days=1)
+                previous_start = current_start - timedelta(days=days)
+            except OverflowError:
+                return error(
+                    'Previous comparison period is outside the supported date range.',
+                    400
+                )
+
+            comparison_period = {
+                'previous_start': previous_start.isoformat(),
+                'previous_end': previous_end.isoformat(),
+                'days': days
+            }
 
     conditions = []
     params = []
@@ -588,6 +712,48 @@ def analytics():
                 ORDER BY total DESC, time ASC
             """, params)
         ]
+
+        if comparison_period is not None:
+            previous_conditions = [
+                'date >= ?',
+                'date <= ?'
+            ]
+
+            previous_params = [
+                comparison_period['previous_start'],
+                comparison_period['previous_end']
+            ]
+
+            if doctor is not None:
+                previous_conditions.append('doctor = ?')
+                previous_params.append(doctor)
+
+            previous_where = (
+                'WHERE ' + ' AND '.join(previous_conditions)
+            )
+
+            previous_summary = dict(c.execute(f"""
+                SELECT
+                    COUNT(*) AS total,
+                    COALESCE(SUM(
+                        CASE WHEN status = 'Booked' THEN 1 ELSE 0 END
+                    ), 0) AS active,
+                    COALESCE(SUM(
+                        CASE WHEN status = 'Cancelled' THEN 1 ELSE 0 END
+                    ), 0) AS cancelled
+                FROM appointments
+                {previous_where}
+            """, previous_params).fetchone())
+
+            comparison = build_period_comparison(
+                summary,
+                previous_summary,
+                start_date,
+                end_date,
+                comparison_period['previous_start'],
+                comparison_period['previous_end'],
+                comparison_period['days']
+            )
 
     total = summary['total']
 
@@ -668,6 +834,9 @@ def analytics():
             'peak_appointment_time': top_metric(times, 'time'),
             'most_booked_doctor': top_metric(doctors, 'doctor')
         }
+
+    if include_comparison:
+        result['comparison'] = comparison
 
     return jsonify(result)
 
