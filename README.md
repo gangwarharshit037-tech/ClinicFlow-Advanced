@@ -2,11 +2,18 @@
 
 ### Smart Appointment Management & Healthcare Data Analytics
 
-[![Automated Tests](https://github.com/gangwarharshit037-tech/ClinicFlow-Advanced/actions/workflows/tests.yml/badge.svg)](https://github.com/gangwarharshit037-tech/ClinicFlow-Advanced/actions/workflows/tests.yml)
+![Version](https://img.shields.io/badge/Version-2.0_Development-teal)
+
+> V2.0 Phase 1 introduces advanced analytics.
+> The development branch is `develop/v2.0`.
+> The live demo remains on the previous release until V2.0 deployment is verified.
+> The original version is preserved under the `v1.0.0` Git tag.
+
+[![Automated Tests](https://github.com/gangwarharshit037-tech/ClinicFlow-Advanced/actions/workflows/tests.yml/badge.svg?branch=develop%2Fv2.0)](https://github.com/gangwarharshit037-tech/ClinicFlow-Advanced/actions/workflows/tests.yml)
 ![Python](https://img.shields.io/badge/Python-3.12-blue)
 ![Flask](https://img.shields.io/badge/Flask-3.x-black)
 ![Database](https://img.shields.io/badge/Database-SQLite-blue)
-![Tests](https://img.shields.io/badge/Local_Tests-46_Passed-brightgreen)
+![Tests](https://img.shields.io/badge/Local_Tests-112_Passed-brightgreen)
 ![Deployment](https://img.shields.io/badge/Deployment-Render-purple)
 ![Project](https://img.shields.io/badge/Project-Educational-orange)
 
@@ -70,18 +77,36 @@ after inactivity.
 - CSV export for further analysis.
 - Responsive desktop and mobile interfaces.
 
-### Advanced Analytics
+### Advanced Analytics - V2.0
 
-- Total appointment count.
-- Active and cancelled appointment counts.
-- Appointment cancellation rate.
+- Inclusive appointment date-range filtering.
+- Doctor-wise filtering and combined filters.
+- Total, active and cancelled appointment counts.
+- Cancellation rate and active booking rate.
 - Number of doctors represented in appointment records.
-- Daily appointment trends.
-- Doctor-wise appointment distribution.
-- Busiest appointment time slots.
-- Responsive horizontal bar charts.
-- Automatic analytics refresh after appointment cancellation.
+- Average daily appointments.
+- Busiest appointment day and peak appointment time.
+- Most booked doctor, including tied results.
+- Five interactive Chart.js visualizations.
+- Current versus previous period comparison.
+- Percentage growth and percentage-point calculations.
+- Automatic analytics refresh after cancellation.
+- Responsive desktop and mobile dashboard.
 - Protected analytics API returning aggregated statistics.
+- Empty-data handling and safe chart cleanup.
+
+### Interactive Visualizations
+
+| Chart | Visualization |
+|---|---|
+| Daily appointment trends | Line chart |
+| Doctor distribution | Horizontal bar chart |
+| Appointment time distribution | Vertical bar chart |
+| Appointment status | Doughnut chart |
+| Period comparison | Grouped bar chart |
+
+Chart.js 4.5.1 is served locally with its license.
+No external chart CDN is required at runtime.
 
 ### AI Receptionist
 
@@ -131,7 +156,7 @@ earlier interface versions.
 | Frontend | HTML, CSS, JavaScript |
 | Database | SQLite |
 | Data Analytics | SQL aggregation, Python, JavaScript |
-| Data Visualization | Responsive JavaScript bar charts |
+| Data Visualization | Chart.js 4.5.1, responsive interactive charts |
 | API Architecture | REST-style JSON endpoints |
 | Local Server | Waitress |
 | Cloud Server | Gunicorn |
@@ -192,10 +217,47 @@ records can be converted into operational insights.
 | Active Appointments | Appointments with Booked status |
 | Cancelled Appointments | Appointments with Cancelled status |
 | Cancellation Rate | Cancelled appointments divided by total appointments, multiplied by 100 |
-| Total Doctors | Distinct doctors represented in appointment data |
+| Doctors with Appointments | Distinct doctors represented in appointment data |
+| Active Booking Rate | Active appointments divided by total appointments, multiplied by 100 |
+| Average Daily Appointments | Total appointments divided by reporting calendar days |
+| Busiest Day | Date with the highest appointment count |
+| Peak Appointment Time | Scheduled time with the highest appointment count |
+| Most Booked Doctor | Doctor with the highest appointment count |
 | Daily Trends | Appointment counts grouped by appointment date |
 | Doctor Distribution | Appointment counts grouped by doctor |
 | Busiest Time Slots | Appointment counts grouped by scheduled time |
+
+### Period Comparison
+
+V2.0 compares a selected date range with the immediately
+preceding period of equal calendar-day length.
+
+Both periods use the same doctor filter.
+
+For example:
+
+| Period | Date range |
+|---|---|
+| Current | November 25-27, 2026 |
+| Previous | November 22-24, 2026 |
+
+The dashboard compares:
+
+- Total appointment growth.
+- Changes in active and cancelled appointment counts.
+- Active booking rate changes in percentage points.
+- Cancellation rate changes in percentage points.
+- Average daily appointment growth.
+
+Percentage growth is undefined when the previous value is zero.
+Rate changes are undefined when either period has no appointments.
+The dashboard displays N/A for undefined metrics.
+
+Percentage-point differences are calculated before rounding.
+
+Date filters refer to scheduled appointment dates rather than
+record creation dates. Status comparisons reflect current
+appointment statuses, not historical snapshots.
 
 ### Analytics Applications
 
@@ -258,6 +320,29 @@ The public demo uses fictional booking details only.
 | POST | `/api/admin/appointments/<aid>/cancel` | Cancel an appointment |
 | POST | `/api/admin/reminders/run` | Run reminder preview workflow |
 | GET | `/api/admin/deliveries` | Retrieve delivery records |
+
+### Analytics API Query Parameters
+
+The protected analytics endpoint supports optional query parameters.
+
+| Parameter | Purpose |
+|---|---|
+| start_date | Inclusive starting date in YYYY-MM-DD format |
+| end_date | Inclusive ending date in YYYY-MM-DD format |
+| doctor | Filter by a configured doctor |
+| include_kpis | Set to 1 to include advanced performance indicators |
+| include_comparison | Set to 1 to include period comparison |
+
+Example authenticated GET request:
+
+`/api/admin/analytics?start_date=2026-11-25&end_date=2026-11-27&include_kpis=1&include_comparison=1`
+
+Both dates are required for period comparison.
+Invalid dates, reversed date ranges and unknown doctors are rejected.
+
+Date and doctor filters use parameterized SQL queries.
+Advanced KPIs and comparisons are optional to preserve the
+original API response structure.
 
 ### Integration Endpoints
 
@@ -355,10 +440,14 @@ ClinicFlow-Advanced/
 |   |-- login.css
 |   |-- login.js
 |   |-- whatsapp_monitoring.js
-|   `-- favicon.svg
+|   |-- favicon.svg
+|   `-- vendor/
+|       `-- chartjs/
+|           |-- chart.umd.min.js
+|           `-- LICENSE.md
 |
 |-- tests/
-|   `-- 20 automated test modules
+|   `-- 24 automated test modules
 |
 |-- docs/
 |   `-- screenshots/
@@ -450,8 +539,17 @@ configured non-public development environment.
 
 ## Automated Testing
 
-ClinicFlow Advanced includes **46 automated tests across
-20 Python test modules**.
+ClinicFlow Advanced V2.0 includes **112 automated tests across
+24 Python test modules**.
+
+| Test category | Tests |
+|---|---:|
+| Original V1.0 regression tests | 46 |
+| Date-range analytics | 15 |
+| Doctor-wise analytics | 15 |
+| Advanced analytics KPIs | 15 |
+| Period comparison and numerical precision | 21 |
+| Total | 112 |
 
 ### Run the Test Suite
 
@@ -462,10 +560,24 @@ python -m pytest -q
 ### Latest Verified Local Result
 
 ```text
-46 passed in 19.30s
+112 passed in 48.62s
 ```
 
-Verified on November 24, 2026.
+Verified locally on November 26, 2026.
+
+### Dependency Security Audit
+
+The installed Python project dependencies were audited
+using pip-audit 2.10.1 on November 26, 2026.
+
+Result: No known vulnerabilities found.
+
+The audit tool was installed in a separate temporary
+virtual environment.
+
+This result applies to the audited local Python packages
+and does not constitute a complete application security
+audit or cover the vendored JavaScript dependency.
 
 ### Test Coverage Areas
 
@@ -477,6 +589,12 @@ Verified on November 24, 2026.
 | Administration | Authentication and protected access |
 | Cancellation | Appointment cancellation and CSRF validation |
 | Analytics | Protected appointment statistics |
+| Date Filtering | Inclusive dates, invalid dates and empty results |
+| Doctor Filtering | Doctor validation and combined filters |
+| Advanced KPIs | Reporting periods, averages, rates and ties |
+| Period Comparison | Equal-length periods, growth and empty datasets |
+| Numerical Precision | Percentage-point rounding regression |
+| Analytics Privacy | Aggregated responses and database integrity |
 | Authentication | Login rate limiting |
 | Concurrency | Concurrent login and rate limiter behavior |
 | Rate Limiter | Capacity, expiration and in-flight requests |
@@ -505,6 +623,14 @@ The following workflows were also manually checked:
 - Live Render appointment booking.
 - Appointment cancellation.
 - Analytics refresh after cancellation.
+- Combined date and doctor filters.
+- Advanced KPI calculations.
+- Interactive chart tooltips.
+- Period comparison calculations.
+- Empty-period chart handling.
+- Chart cleanup and recreation.
+- Mobile comparison layout.
+- Automatic comparison refresh after cancellation.
 - CSV export.
 - Reminder preview.
 - Favicon loading.
@@ -519,8 +645,18 @@ GitHub Actions provides an automated testing workflow through:
 .github/workflows/tests.yml
 ```
 
-The workflow badge at the top of this README reflects
-the GitHub Actions workflow status.
+The workflow is configured to run on:
+
+- Pushes to main.
+- Pushes to develop/v2.0.
+- Pull requests targeting main.
+- Manual workflow dispatch.
+
+The workflow uses Python 3.12 on Ubuntu with external messaging
+and scheduling disabled.
+
+The workflow badge reflects the development branch CI status.
+Local test results are reported separately.
 
 ## Cloud Deployment
 
@@ -567,8 +703,9 @@ configuration.
 Potential improvements include:
 
 - PostgreSQL-based persistent database storage.
-- Advanced date-range analytics filters.
-- Additional operational performance indicators.
+- Synthetic appointment datasets for analytics demonstrations.
+- Excel-based reporting and downloadable analytical reports.
+- Appointment demand forecasting.
 - Excel and Power BI reporting workflows.
 - Role-based administrative access control.
 - Browser-based automated end-to-end tests.
@@ -587,6 +724,10 @@ features.
 - SQL querying and database management.
 - Data aggregation and KPI calculation.
 - Data visualization and dashboard development.
+- Interactive Chart.js visualization.
+- Time-series and period-over-period analysis.
+- Parameterized SQL filtering.
+- Numerical accuracy and KPI validation.
 - REST API development.
 - HTML, CSS and JavaScript.
 - Authentication and application security.
@@ -633,4 +774,4 @@ private database files, or other sensitive information.
 
 ---
 
-Built with Python, Flask, SQLite and JavaScript.
+Built with Python, Flask, SQLite, JavaScript and Chart.js.
