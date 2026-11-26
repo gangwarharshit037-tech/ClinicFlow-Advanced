@@ -2,14 +2,15 @@
 
 ### Smart Appointment Management & Healthcare Data Analytics
 
-![Version](https://img.shields.io/badge/Version-2.0_Development-teal)
+![Version](https://img.shields.io/badge/Version-2.0_Phase_1-teal)
 
-> V2.0 Phase 1 introduces advanced analytics.
-> The development branch is `develop/v2.0`.
-> The live demo remains on the previous release until V2.0 deployment is verified.
+> V2.0 Phase 1 introduces advanced analytics,
+> interactive visualizations and period comparison.
+> The main branch is the deployment branch.
 > The original version is preserved under the `v1.0.0` Git tag.
+> Additional V2.0 phases remain on the project roadmap.
 
-[![Automated Tests](https://github.com/gangwarharshit037-tech/ClinicFlow-Advanced/actions/workflows/tests.yml/badge.svg?branch=develop%2Fv2.0)](https://github.com/gangwarharshit037-tech/ClinicFlow-Advanced/actions/workflows/tests.yml)
+[![Automated Tests](https://github.com/gangwarharshit037-tech/ClinicFlow-Advanced/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/gangwarharshit037-tech/ClinicFlow-Advanced/actions/workflows/tests.yml)
 ![Python](https://img.shields.io/badge/Python-3.12-blue)
 ![Flask](https://img.shields.io/badge/Flask-3.x-black)
 ![Database](https://img.shields.io/badge/Database-SQLite-blue)
@@ -655,8 +656,12 @@ The workflow is configured to run on:
 The workflow uses Python 3.12 on Ubuntu with external messaging
 and scheduling disabled.
 
-The workflow badge reflects the development branch CI status.
+The workflow badge reflects the main branch CI status.
 Local test results are reported separately.
+
+Development branch CI verification on November 26, 2026:
+112 automated tests passed in 15.95 seconds on Ubuntu
+using Python 3.12 (workflow run #12, commit fa291ff).
 
 ## Cloud Deployment
 
