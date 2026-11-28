@@ -54,5 +54,11 @@ jobs:
       - name: Clean synthetic dataset
         run: python -m reporting.data_cleaning
 
+      - name: Build analytical database
+        run: python -m reporting.build_analytics_db
+
+      - name: Export SQL reports
+        run: python -m reporting.export_sql_reports
+
       - name: Run automated tests
         run: python -m pytest tests/ -v

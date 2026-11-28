@@ -111,3 +111,81 @@ or dependency versions.
 
 Generated datasets are overwritten when generation
 or cleaning commands are executed again.
+
+## Advanced SQL Business Analysis
+
+The analytical pipeline uses 10,000 synthetic appointments for 2025.
+
+### Database architecture
+
+- SQLite star schema
+- One fact table and three dimension tables
+- Six custom indexes
+- Six analytical views
+- Automated ETL and integrity validation
+
+### Reporting features
+
+- 10 business KPI reports
+- 6 advanced SQL reports
+- Common Table Expressions (CTEs)
+- SQL window functions
+- Month-over-month growth
+- Cumulative appointment analysis
+- Rolling seven-day averages
+- Department contribution and rankings
+- Automated CSV exports
+- SHA-256 checksums and report manifest
+
+### Run the reporting pipeline
+
+    python scripts/generate_synthetic_data.py
+    python -m reporting.data_validation
+    python -m reporting.data_cleaning
+    python -m reporting.build_analytics_db
+    python -m reporting.business_kpis
+    python -m reporting.advanced_sql
+    python -m reporting.export_sql_reports
+
+### Verified results
+
+| Metric | Value |
+| --- | ---: |
+| Total appointments | 10,000 |
+| Booked appointments | 8,000 |
+| Cancelled appointments | 2,000 |
+| Cancellation rate | 20% |
+| Average daily appointments | 27.40 |
+| Average lead time | 14.96 days |
+| SQL reports | 16 |
+| CSV files including manifest | 17 |
+| Exported analytical rows | 534 |
+| SQL automated tests | 35 |
+| Total automated tests passed locally | 167 |
+
+### Automated testing
+
+    python -m pytest tests/test_sql_reporting.py -v
+    python -m pytest tests/ -q
+
+Tests use temporary databases and export directories.
+Generate and clean the synthetic CSV before running tests.
+
+### Generated outputs
+
+- data/analytics/clinicflow_analytics.db
+- reports/sql/*.csv
+
+Generated outputs are excluded from Git.
+
+### Limitations
+
+- All reporting data is synthetic.
+- Booked appointments are not completed visits.
+- Rankings measure appointment volume, not clinical quality.
+- January growth is undefined.
+- Rolling averages require seven complete days.
+- Index performance has not been benchmarked.
+- CSV replacements are atomic individually, not as a batch.
+- Do not rebuild the database during report export.
+- Excel and Power BI integration are planned next.

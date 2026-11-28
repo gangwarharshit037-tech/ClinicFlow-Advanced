@@ -83,3 +83,6 @@ static/*_backup.js
 # Phase 2 - Generated synthetic reporting datasets
 /data/synthetic/appointments_2025.csv
 /data/synthetic/appointments_2025_clean.csv
+
+# Generated SQL analysis reports
+reports/sql/*.csv
