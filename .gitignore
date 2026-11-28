@@ -79,3 +79,7 @@ app_backup_*.py
 app_broken_*.py
 backup_before_*/
 static/*_backup.js
+
+# Phase 2 - Generated synthetic reporting datasets
+/data/synthetic/appointments_2025.csv
+/data/synthetic/appointments_2025_clean.csv

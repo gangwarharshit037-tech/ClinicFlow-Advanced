@@ -1,8 +1,8 @@
-﻿name: ClinicFlow Automated Tests
+name: ClinicFlow Automated Tests
 
 on:
   push:
-    branches: [main, develop/v2.0]
+    branches: [main, develop/v2.0, develop/v2.0-phase2]
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -33,13 +33,26 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
-          cache-dependency-path: requirements.txt
+          cache-dependency-path: |
+            requirements.txt
+            requirements-reporting.txt
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
+          python -m pip install -r requirements-reporting.txt
           python -m pip install "pytest>=8,<10"
+          python -m pip check
+
+      - name: Generate synthetic dataset
+        run: python scripts/generate_synthetic_data.py
+
+      - name: Validate synthetic dataset
+        run: python -m reporting.data_validation
+
+      - name: Clean synthetic dataset
+        run: python -m reporting.data_cleaning
 
       - name: Run automated tests
         run: python -m pytest tests/ -v
